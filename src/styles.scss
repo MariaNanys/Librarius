@@ -1,3 +1,17 @@
 body {
     margin: 0;
 }
+.top-bar {
+    display: flex;
+    justify-content: flex-end;
+    
+    .btn {
+  background-color: #A3B18A;
+  color: white;
+  border: none;
+  padding: 10px 24px;
+  border-radius: 20px;
+  font-weight: bold;
+  cursor: pointer;
+}
+}

@@ -1,0 +1,16 @@
+.form-login {
+    display: flex;
+    flex-direction: column;
+
+    h2 {
+        margin: 50px auto;
+    }
+    label {
+        display: flex;
+        flex-direction: column;
+        margin-bottom: 20px;
+    }
+    .btn {
+        margin-top: 20px;
+    }
+}

@@ -1,0 +1,42 @@
+.form-registration {
+    display: flex;
+    flex-direction: column;
+h2 {
+    display: flex;
+    margin: 50px auto;
+}
+    label {
+        margin-bottom: 20px;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .password-requirements {
+  list-style: none;
+  padding-left: 0;
+  font-size: 14px;
+  margin-top: 5px;
+
+  li {
+    color: red;
+
+    &.valid {
+      color: green;
+    }
+  }
+}
+}
+.registration-success {
+  text-align: center;
+  margin-top: 50px;
+
+  h2 {
+    color: #2e7d32;
+    margin-bottom: 20px;
+  }
+
+  p {
+    font-size: 16px;
+    color: #555;
+  }
+}

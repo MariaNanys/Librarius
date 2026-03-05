@@ -1,0 +1,81 @@
+<header class="top-bar">
+  <button class="btn" routerLink="/login">Logowanie</button>
+</header>
+@if (!formSubmitted()) {
+<form (submit)="onSubmit($event)" class="form-registration">
+  <h2>Rejestracja</h2>
+
+  <label>
+    <input type="text"
+           [formField]="registrationForm.name"
+           placeholder="Imię" />
+  </label>
+
+  <label>
+    <input type="text"
+           [formField]="registrationForm.surname"
+           placeholder="Nazwisko" />
+  </label>
+
+  <label>
+    <select [formField]="registrationForm.region">
+<option value="" disabled selected>Wybierz województwo</option>
+
+@for (region of regions; track region) {
+  <option [value]="region">{{ region }}</option>
+}
+
+</select>
+  </label>
+
+  <label>
+    <input type="email"
+           [formField]="registrationForm.email"
+           placeholder="E-mail" />
+  </label>
+@if (registrationForm.email().touched() && registrationForm.email().errors(); as errors) {
+  @for (error of errors; track error) {
+    <p class="error">{{ error.message }}</p>
+  }
+}
+  <label>
+    <input type="password"
+           [formField]="registrationForm.password"
+           placeholder="Hasło"/>
+  </label>
+
+  <label>
+    <input type="password"
+           [formField]="registrationForm.repeatPassword"
+           placeholder="Powtórz hasło"/>
+  </label>
+   <ul class="password-requirements">
+  <li [class.valid]="registrationForm().controlValue().password && registrationForm().controlValue().password.length >= 8">Min 8 znaków</li>
+  <li [class.valid]="/[A-Z]/.test(registrationForm().controlValue().password || '')">Min 1 duża litera</li>
+  <li [class.valid]="/[a-z]/.test(registrationForm().controlValue().password|| '')">Min 1 mała litera</li>
+  <li [class.valid]="/[^A-Za-z0-9]/.test(registrationForm().controlValue().password || '')">Min 1 znak specjalny</li>
+</ul>
+
+@if (registrationForm.repeatPassword().touched() && registrationForm.repeatPassword().errors(); as errors) {
+  @for (error of errors; track error.kind) {
+    <p class="error">{{ error.message }}</p>
+  }
+}
+  <button class="btn"
+          type="submit"
+          [disabled]="registrationForm().invalid()"
+          routerLink="/registration-success">
+    Zarejestruj się
+  </button>
+
+</form>
+}
+@if (formSubmitted()) {
+
+<main class="registration-success">
+  <h2>Rejestracja zakończona sukcesem!</h2>
+  <p>
+    W celu sfinalizowania rejestracji potwierdź autoryzację, klikając w link wysłany na Twój adres e-mail.
+  </p>
+</main>
+}
