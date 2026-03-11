@@ -1,37 +1,49 @@
-import { Component, signal } from "@angular/core";
+import { Component, inject, signal } from "@angular/core";
 import { form, FormField, pattern, required, submit } from "@angular/forms/signals";
-import { RouterLink } from "@angular/router";
+import { Router, RouterLink } from "@angular/router";
+import { AuthService } from "../services/auth.service";
 
 @Component({
-    selector: 'app-login',
-    templateUrl: './login.html',
-    styleUrl: './login.scss',
-    imports: [FormField, RouterLink]
+  selector: 'app-login',
+  templateUrl: './login.html',
+  styleUrl: './login.scss',
+  imports: [FormField, RouterLink,]
 })
 
 export class LoginComponent {
-loginModel = signal({
+  authService: AuthService = inject(AuthService);
+  loginModel = signal({
     login: '',
     password: '',
-});
-// loginForm = form(this.loginModel);
+  });
+  private router = inject(Router);
+  user = signal<{ first_name: string } | null>(null);
+  constructor() {
+    const storedUser = localStorage.getItem("user");
+    if (storedUser) {
+      this.user.set(JSON.parse(storedUser));
+    }
 
-loginForm = form(this.loginModel, (schemaPath) => {
-    required(schemaPath.login, {message: 'Login jest wymagany'});
+  }
+  loginForm = form(this.loginModel, (schemaPath) => {
+    required(schemaPath.login, { message: 'Login jest wymagany' });
 
     pattern(schemaPath.login, /^([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}|[0-9]+)$/, {
-      message: 'Login musi być prawdziwym adresem e-mail lub identyfikatorem'});
-    required(schemaPath.password, {message: 'Hasło jest wymagane'});
-    
+      message: 'Login musi być prawdziwym adresem e-mail lub identyfikatorem'
+    });
+    required(schemaPath.password, { message: 'Hasło jest wymagane' });
+
   });
   onSubmit(event: Event) {
     event.preventDefault();
     submit(this.loginForm, {
       action: async () => {
         const credentials = this.loginModel();
-        // In a real app, this would be async:
-        // await this.authService.login(credentials);
-        console.log('Logowanie z:', credentials);
+        this.authService.login(credentials).subscribe((result: any) => {
+          console.log(result);
+          this.authService.setCurrentUser(result.user);
+          this.router.navigate(['/']);
+        })
       },
     });
   }

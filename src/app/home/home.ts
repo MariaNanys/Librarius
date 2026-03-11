@@ -1,5 +1,6 @@
-import { Component, signal } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { RouterLink } from "@angular/router";
+import { AuthService } from '../services/auth.service';
 
 
 @Component({
@@ -9,5 +10,6 @@ import { RouterLink } from "@angular/router";
   imports: [RouterLink]
 })
 export class HomeComponent {
-
+  private authService = inject(AuthService);
+  user = this.authService.currentUser;
 }

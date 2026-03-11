@@ -4,7 +4,8 @@
       <img src="../../assets/logotype.png" alt="Logo aplikacji">
       </a>
   </div>
-  <ul class="nav-links">
+  <div class="navs">
+    <ul class="nav-links">
     @for (item of menuItems(); track item.path) {
     <li>
       <a [routerLink]="item.path" routerLinkActive="active">
@@ -13,4 +14,18 @@
     </li>
   }
   </ul>
+  @if (user()) {
+      <ul class="nav-links-loged">
+    @for (item of menuItemsLoged(); track item.path) {
+    <li>
+      <a [routerLink]="item.path" routerLinkActive="active">
+          {{item.label}}
+      </a>
+    </li>
+  }
+  </ul>
+  }
+
+  </div>
+  
 </nav>
