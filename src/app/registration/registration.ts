@@ -22,23 +22,23 @@ export class RegistrationComponent {
     });
     // loginForm = form(this.loginModel);
     regions = [
-        'Dolnośląskie',
-        'Kujawsko-Pomorskie',
-        'Lubelskie',
-        'Lubuskie',
-        'Łódzkie',
-        'Małopolskie',
-        'Mazowieckie',
-        'Opolskie',
-        'Podkarpackie',
-        'Podlaskie',
-        'Pomorskie',
-        'Śląskie',
-        'Świętokrzyskie',
-        'Warmińsko-Mazurskie',
-        'Wielkopolskie',
-        'Zachodniopomorskie'
-    ];
+    { id: 1, name: 'Dolnośląskie' },
+    { id: 2, name: 'Kujawsko-Pomorskie' },
+    { id: 3, name: 'Lubelskie' },
+    { id: 4, name: 'Lubuskie' },
+    { id: 5, name: 'Łódzkie' },
+    { id: 6, name: 'Małopolskie' },
+    { id: 7, name: 'Mazowieckie' },
+    { id: 8, name: 'Opolskie' },
+    { id: 9, name: 'Podkarpackie' },
+    { id: 10, name: 'Podlaskie' },
+    { id: 11, name: 'Pomorskie' },
+    { id: 12, name: 'Śląskie' },
+    { id: 13, name: 'Świętokrzyskie' },
+    { id: 14, name: 'Warmińsko-Mazurskie' },
+    { id: 15, name: 'Wielkopolskie' },
+    { id: 16, name: 'Zachodniopomorskie' }
+];
 
     formSubmitted = signal(false);
     private _registrationForm = form(this.registrationModel, (schemaPath) => {
@@ -79,16 +79,36 @@ export class RegistrationComponent {
         this._registrationForm = value;
     }
     onSubmit(event: Event) {
-        event.preventDefault();
-        submit(this.registrationForm, {
-            action: async () => {
-                const { repeatPassword, ...data } = this.registrationModel();
-                this.authService.register(data).subscribe((result) => {
-                    console.log(result);
-                })
-                this.formSubmitted.set(true);
-            },
-        });
-    }
+    event.preventDefault();
+    submit(this.registrationForm, {
+        action: async () => {
+            // 1. Pobieramy dane z formularza
+            const formValues = this.registrationModel();
 
+            // 2. Skoro użyłeś tablicy obiektów, formValues.region ma już w sobie ID (np. "7")
+            // Zwykły atrybut HTML value zawsze jest tekstem, więc zamieniamy go na liczbę:
+            const regionId = Number(formValues.region);
+
+            // 3. Budujemy finalny obiekt DOKŁADNIE w takim formacie, jakiego oczekuje BE
+            const payloadToSend = {
+                email: formValues.email,
+                password: formValues.password,
+                first_name: formValues.first_name,
+                last_name: formValues.last_name,
+                region: regionId // <-- Tu wskakuje czysta liczba np. 7
+            };
+
+            // 4. Wysyłamy do serwera
+            this.authService.register(payloadToSend).subscribe({
+                next: (result) => {
+                    console.log('Sukces');
+                    this.formSubmitted.set(true);
+                },
+                error: (err) => {
+                    console.error('Błąd z serwera:', err);
+                }
+            });
+        },
+    });
+}
 }

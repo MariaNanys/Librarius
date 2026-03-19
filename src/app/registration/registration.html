@@ -19,12 +19,11 @@
 
   <label>
     <select [formField]="registrationForm.region">
-<option value="" disabled selected>Wybierz województwo</option>
+  <option value="" disabled selected>Wybierz województwo</option>
 
-@for (region of regions; track region) {
-  <option [value]="region">{{ region }}</option>
-}
-
+  @for (region of regions; track region.id) {
+    <option [value]="region.id">{{ region.name }}</option>
+  }
 </select>
   </label>
 
@@ -62,11 +61,10 @@
   }
 }
   <button class="btn"
-          type="submit"
-          [disabled]="registrationForm().invalid()"
-          routerLink="/registration-success">
-    Zarejestruj się
-  </button>
+        type="submit"
+        [disabled]="registrationForm().invalid()">
+  Zarejestruj się
+</button>
 
 </form>
 }
