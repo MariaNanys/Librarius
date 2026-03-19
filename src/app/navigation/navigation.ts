@@ -14,7 +14,7 @@ export class NavigationComponent {
   
   menuItems = signal([
     { path: '/categories', label: 'Kategorie' },
-    { path: '/libaries', label: 'Biblioteki' },
+    { path: '/search', label: 'Wyszukaj Książkę' },
   ])
   menuItemsLoged = signal([
     { path: '/logout', label: 'Wyloguj' },
