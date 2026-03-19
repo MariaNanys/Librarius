@@ -1,10 +1,11 @@
 <header class="top-bar">
     <button class="btn" routerLink="/login">Logowanie</button>
 </header>
+
 <div class="search-component">
     <h2>Wyszukaj książkę</h2>
+    
     <form class="search_form">
-
         <label>
             <div class="search-section">
                 <div class="search-input">
@@ -16,5 +17,32 @@
             </div>
         </label>
 
+        <label>
+            <select>
+                <option value="" disabled selected>Wyszukaj autora/autorów</option>
+            </select>
+        </label> <label>
+            <input type="number" placeholder="Numer zasobu" />
+        </label>
+
+        <div class="search-date">
+            <label>
+                <input type="text" placeholder="Rok wydania (od)" onfocus="(this.type='date')" onblur="(this.type='text')" />
+            </label>
+            <label>
+                <input type="text" placeholder="Rok wydania (do)" onfocus="(this.type='date')" onblur="(this.type='text')" />
+            </label>
+        </div>
+
+        <label>
+            <input type="text" placeholder="Wydawca" />
+        </label>
+
+        <label>
+            <select>
+                <option value="" disabled selected>Kategoria</option>
+            </select>
+        </label>
+        
     </form>
 </div>
