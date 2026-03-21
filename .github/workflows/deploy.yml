@@ -1,0 +1,67 @@
+name: Build and Deploy Librarius
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Create environment.prod.ts
+        run: |
+          mkdir -p src/environments
+          echo "export const environment = {
+            production: true,
+            apiUrl: '${{ secrets.API_URL }}'
+          };" > src/environments/environment.prod.ts
+
+      - name: Build
+        run: npm run build -- --configuration=production
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: build
+          # Angular 17+ buduje aplikację dokładnie do tej ścieżki
+          path: dist/Librarius/browser/ 
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: build
+    if: github.ref == 'refs/heads/main'
+
+    steps:
+      - name: Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: build
+          # Pliki zostaną pobrane bezpośrednio do głównego katalogu roboczego (./)
+
+      - name: Install lftp
+        run: sudo apt-get install -y lftp
+
+      - name: Deploy to SFTP
+        env:
+          SFTP_HOST: ${{ secrets.SFTP_HOST }}
+          SFTP_USERNAME: ${{ secrets.SFTP_USERNAME }}
+          SFTP_PASSWORD: ${{ secrets.SFTP_PASSWORD }}
+          SFTP_PORT: ${{ secrets.SFTP_PORT }}
+        run: |
+          lftp -u "$SFTP_USERNAME","$SFTP_PASSWORD" -p "$SFTP_PORT" sftp://$SFTP_HOST <<EOF
+          set sftp:auto-confirm yes
+          mirror --reverse --delete --verbose --exclude "error/" --exclude "certyfikaty/" --exclude "stats/" --exclude "map/" --exclude "robots.txt" . /var/www/librarius.nanys.pl/web
+          EOF
