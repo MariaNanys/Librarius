@@ -23,11 +23,11 @@ jobs:
 
       - name: Create environment.prod.ts
         run: |
-          mkdir -p environments
+          mkdir -p src/environments
           echo "export const environment = {
             production: true,
             apiUrl: '${{ secrets.API_URL }}'
-          };" > environments/environment.prod.ts
+          };" > src/environments/environment.prod.ts
 
       - name: Build
         run: npm run build -- --configuration=production
