@@ -16,16 +16,20 @@
   </ul>
   @if (user()) {
       <ul class="nav-links-loged">
-    @for (item of menuItemsLoged(); track item.path) {
-    <li>
-      <a [routerLink]="item.path" routerLinkActive="active">
-          {{item.label}}
-      </a>
-    </li>
-  }
-  </ul>
-  }
-
+        @for (item of menuItemsLoged(); track item.path) {
+          <li>
+            <a [routerLink]="item.path" routerLinkActive="active">
+                {{item.label}}
+            </a>
+          </li>
+        }
+        
+        <li>
+          <a style="cursor: pointer;" (click)="onLogout()">
+            Wyloguj
+          </a>
+        </li>
+      </ul>
+    }
   </div>
-  
 </nav>

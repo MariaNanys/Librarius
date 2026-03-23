@@ -21,10 +21,12 @@ export class AuthService {
         localStorage.setItem('user', JSON.stringify(user));
         this.currentUser.set(user);
     }
-    logout() {
-        localStorage.removeItem('user');
-        this.currentUser.set(null);
-    }
+    // W pliku auth.service.ts upewnij się, że metoda logout wygląda tak:
+  logout() {
+      localStorage.removeItem('user');
+      localStorage.removeItem('token'); // <-- Dodajemy usunięcie tokena!
+      this.currentUser.set(null);
+  }
 
     register(data: any): Observable<any> {
         return this.#http.post(environment.apiUrl + '/auth/register', data);
