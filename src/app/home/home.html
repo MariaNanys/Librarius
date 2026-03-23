@@ -1,11 +1,3 @@
-<header class="top-bar">
-    @if (user(); as loggedUser) {
-  <p>Cześć, {{ loggedUser.first_name }}!</p>
-  }
-  @else {
-    <button class="btn btn-login" routerLink="/login">Logowanie</button>
-  }
-</header>
 <div class="search-section">
     <div class="search-input">
         <span class="search-icon">
