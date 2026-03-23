@@ -1,13 +1,14 @@
-import { Injectable } from "@angular/core";
+import { Injectable, signal } from "@angular/core";
 
 @Injectable({
     providedIn: 'root'
 })
 export class CacheService {
-  // Magazyn na nasze dane (klucz: adres URL, wartość: dane + czas wygaśnięcia)
+  // 1. NASZ NOWY SYGNAŁ DO TRZYMANIA STANU UŻYTKOWNIKA
+  user = signal<{ first_name: string } | null>(null);
+
+  // --- Twoja dotychczasowa logika cachowania ---
   private cacheMap = new Map<string, { data: any; expiry: number }>();
-  
-  // Domyślny czas życia danych w cache'u (np. 30 minut w milisekundach)
   private readonly DEFAULT_TTL = 30 * 60 * 1000; 
 
   set(cacheKey: string, body: any, ttl: number = this.DEFAULT_TTL): void {
@@ -17,28 +18,21 @@ export class CacheService {
 
   get(cacheKey: string): any | null {
     const cachedItem = this.cacheMap.get(cacheKey);
-
-    // Jeśli nie ma nic pod tym kluczem
-    if (!cachedItem) {
-      return null;
-    }
-
-    // Jeśli dane są przeterminowane
+    if (!cachedItem) return null;
     if (Date.now() > cachedItem.expiry) {
       this.cacheMap.delete(cacheKey); 
       return null;
     }
-
-    // Zwracamy prawidłowe dane
     return cachedItem.data;
   }
   
-  // Przydatne przy wylogowywaniu użytkownika, żeby wyczyścić mu cache
   clear(cacheKey?: string): void {
     if (cacheKey) {
       this.cacheMap.delete(cacheKey);
     } else {
       this.cacheMap.clear();
+      // Przy pełnym czyszczeniu (np. wylogowaniu) resetujemy też użytkownika
+      this.user.set(null); 
     }
   }
 }
