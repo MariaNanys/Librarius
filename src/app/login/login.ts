@@ -38,22 +38,32 @@ onSubmit(event: Event) {
         const credentials = this.loginModel();
         
         try {
+          // 1. Wysyłamy login i hasło, odbieramy token
           const result: any = await firstValueFrom(this.authService.login(credentials));
           
-          // 1. Zapisujemy sam token do localStorage (przyda się do zapytań API)
+          // 2. ZAPISUJEMY TOKEN - to bardzo ważne, żeby AuthInterceptor mógł go od razu dokleić do kolejnego zapytania!
           localStorage.setItem('token', result.token);
           
-          // 2. Dekodujemy token, aby wyciągnąć imię
+          // 3. Dekodujemy token, aby wyciągnąć z niego ID użytkownika (klucz 'sub')
           const decodedToken: any = jwtDecode(result.token);
+          const userId = decodedToken.sub; // W Twoim tokenie to jest np. "22"
           
-          // 3. Używamy Twojej gotowej metody z AuthService!
-          // Zapisze ona imię w localStorage i zaktualizuje Twój sygnał currentUser
-          this.authService.setCurrentUser({ first_name: decodedToken.first_name });
+          // 4. NOWE: Pobieramy pełne dane użytkownika z API!
+          // Twój AuthInterceptor automatycznie doda tutaj nagłówek "Authorization: Bearer ..."
+          const userProfile: any = await firstValueFrom(this.authService.getUserProfile(userId));
           
+          console.log('Pełny profil z backendu:', userProfile);
+          
+          // 5. Zapisujemy pobrane imię do stanu aplikacji
+          // (Możesz tu przekazać cały obiekt userProfile, jeśli w przyszłości 
+          // będziesz chciał wyświetlać też np. last_name albo email w nawigacji)
+          this.authService.setCurrentUser({ first_name: userProfile.first_name });
+          
+          // 6. Przekierowujemy na stronę główną
           await this.router.navigate(['/']);
           
         } catch (error) {
-          console.error('Błąd logowania:', error);
+          console.error('Błąd logowania lub pobierania profilu:', error);
         }
       },
     });

@@ -34,5 +34,9 @@ export class AuthService {
     login(data: any): Observable<any> {
         return this.#http.post(environment.apiUrl + '/auth/login', data);
     }
-
+// NOWA METODA: Pobiera dane użytkownika po jego ID
+    getUserProfile(userId: string | number): Observable<any> {
+        // Zgodnie z Twoim endpointem: api/users/{user_id}
+        return this.#http.get(environment.apiUrl + '/users/' + userId);
+    }
 }
