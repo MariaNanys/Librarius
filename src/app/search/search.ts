@@ -1,5 +1,7 @@
 import { Component, signal, computed, inject, OnInit, ChangeDetectionStrategy } from '@angular/core';
-import { SearchAdvanceService } from '../services/search-advance.service'; // Upewnij się, że masz ten plik!
+import { SearchAdvanceService } from '../services/search-advance.service';
+import { RouterLink } from '@angular/router';
+import { AuthService } from '../services/auth.service';
 
 // Interfejs określający strukturę danych wysyłanych do Backendu
 export interface SearchBookPayload {
@@ -16,12 +18,16 @@ export interface SearchBookPayload {
 @Component({
   selector: 'app-search',
   standalone: true,
-  templateUrl: './search.html', // Sprawdź czy nazwa pliku HTML się zgadza
+  imports: [RouterLink],
+  templateUrl: './search.html',
   styleUrl: './search.scss',
   changeDetection: ChangeDetectionStrategy.OnPush 
 })
 export class SearchComponent implements OnInit {
   private searchService = inject(SearchAdvanceService);
+  private authService = inject(AuthService);
+
+  isLoggedIn = computed(() => this.authService.currentUser() !== null);
 
   // ==========================================
   // 1. ZWYKŁE POLA TEKSTOWE
@@ -144,7 +150,5 @@ export class SearchComponent implements OnInit {
 
     console.log('Gotowe do wysłania na BE:', payload);
     
-    // Tutaj później dodasz kod wysyłający np:
-    // this.searchService.searchBooks(payload).subscribe(...)
   }
 }

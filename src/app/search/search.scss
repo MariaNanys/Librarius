@@ -207,3 +207,44 @@ input, select {
     }
   }
 }
+/* ======================================================== */
+/* STYLE DLA KOMUNIKATU O WYMAGANYM LOGOWANIU               */
+/* ======================================================== */
+.login-required-message {
+  width: 65%;
+  position: absolute; // Zgodnie z Twoim obecnym ułożeniem .search_form
+  left: 275px;
+  text-align: center;
+
+  h3 {
+    color: #4A3B28;
+    font-size: 24px;
+    margin-bottom: 10px;
+  }
+
+  p {
+    color: #6E6259;
+    font-size: 16px;
+    margin-bottom: 30px;
+  }
+
+  .btn-login-redirect {
+    display: inline-block;
+    background-color: #4A3B28;
+    color: white;
+    padding: 12px 35px;
+    border-radius: 25px;
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 16px;
+    transition: background-color 0.2s, transform 0.1s;
+
+    &:hover {
+      background-color: #3a2e1f;
+    }
+    
+    &:active {
+      transform: scale(0.98);
+    }
+  }
+}
