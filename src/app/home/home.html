@@ -1,14 +1,19 @@
-<div class="search-section">
-    <div class="search-input">
-        <span class="search-icon">
-            <img src="/assets/magnifying-glass.png" alt="ikona szkło powiększające">
-        </span>
-        <input type="text" placeholder="Wpisz ISBN, autor, nazwę książkę">
-    </div>
-</div>
 <section class="recommendations">
     <div class="section-header">
-        <h2>Rekomendowane</h2>
-        <button class="btn-more">Zobacz więcej ></button>
+        <h2>Nowości</h2>
     </div>
+
+    @if (isLoading) {
+        <p>Ładowanie nowości...</p>
+    } @else {
+        <div class="books-grid">
+            @for (book of recentBooks; track book.id) {
+                <a [routerLink]="['/book', book.id]" class="book-card">
+                    <img [src]="book.cover_url" alt="Okładka książki">
+                </a>
+            } @empty {
+                <p>Brak książek do wyświetlenia.</p>
+            }
+        </div>
+    }
 </section>

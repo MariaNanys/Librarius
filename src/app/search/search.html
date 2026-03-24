@@ -171,7 +171,9 @@
 } @else {
 
 <div class="login-required-message">
-    <img src="/assets/lock-icon.png" alt="Zablokowane" class="lock-icon" *ngIf="false">
+    @if (false) {
+        <img src="/assets/lock-icon.png" alt="Zablokowane" class="lock-icon">
+    }
     <h3>Wymagane logowanie</h3>
     <p>Zaawansowana wyszukiwarka jest dostępna tylko dla zalogowanych użytkowników.</p>
 </div>
