@@ -1,44 +1,184 @@
 <div class="search-component">
     <h2>Wyszukaj książkę</h2>
-    
+
     <form class="search_form">
+        
         <label>
             <div class="search-section">
                 <div class="search-input">
                     <span class="search-icon">
                         <img src="/assets/magnifying-glass.png" alt="ikona szkło powiększające">
                     </span>
-                    <input type="text" placeholder="Wprowadź tytuł">
+                    <input 
+                        type="text" 
+                        placeholder="Wprowadź tytuł"
+                        [value]="searchTitle()"
+                        (input)="searchTitle.set($any($event.target).value)"
+                    >
                 </div>
             </div>
         </label>
 
+        <div class="custom-multiselect" (click)="$event.stopPropagation()">
+            <div class="dropdown-header" (click)="toggleAuthorDropdown()" [class.is-open]="isAuthorOpen()">
+                <div class="chips-container">
+                    @if (selectedAuthorsObjects().length === 0) {
+                        <span class="placeholder-text">Wyszukaj autora/autorów</span>
+                    }
+                    @for (author of selectedAuthorsObjects(); track author.id) {
+                        <span class="chip">
+                            {{ author.name }}
+                            <button type="button" class="chip-remove" (click)="removeSelection(author.id, $event, selectedAuthorIds)">×</button>
+                        </span>
+                    }
+                </div>
+                <span class="arrow">@if(isAuthorOpen()) { &#9650; } @else { &#9660; }</span>
+            </div>
+
+            @if (isAuthorOpen()) {
+                <div class="dropdown-list">
+                    <div class="search-container">
+                        <input type="text" placeholder="Szukaj autora" [value]="searchAuthorTerm()" (input)="updateSearchTerm($event, searchAuthorTerm)" (click)="$event.stopPropagation()">
+                    </div>
+                    <div class="options-container">
+                        @for (author of filteredAuthors(); track author.id) {
+                            <label class="dropdown-item" (click)="$event.stopPropagation()">
+                                <input type="checkbox" [checked]="selectedAuthorIds().includes(author.id)" (change)="toggleSelection(author.id, selectedAuthorIds)">
+                                <span class="custom-cb"></span> 
+                                <span class="label-text">{{ author.name }}</span>
+                            </label>
+                        }
+                        @if (filteredAuthors().length === 0) {
+                            <div class="no-results">Nie znaleziono autora</div>
+                        }
+                    </div>
+                </div>
+            }
+        </div>
+
         <label>
-            <select>
-                <option value="" disabled selected>Wyszukaj autora/autorów</option>
-            </select>
-        </label> <label>
-            <input type="number" placeholder="Numer zasobu" />
+            <input 
+                type="number" 
+                placeholder="Numer zasobu"
+                [value]="resourceNumber() || ''"
+                (input)="resourceNumber.set(+$any($event.target).value)" 
+            />
         </label>
 
         <div class="search-date">
             <label>
-                <input type="text" placeholder="Rok wydania (od)" onfocus="(this.type='date')" onblur="(this.type='text')" />
+                <input 
+                    type="text" 
+                    placeholder="Rok wydania (od)" 
+                    onfocus="(this.type='date')" 
+                    onblur="(this.type='text')"
+                    [value]="dateFrom()"
+                    (input)="dateFrom.set($any($event.target).value)"
+                />
             </label>
             <label>
-                <input type="text" placeholder="Rok wydania (do)" onfocus="(this.type='date')" onblur="(this.type='text')" />
+                <input 
+                    type="text" 
+                    placeholder="Rok wydania (do)" 
+                    onfocus="(this.type='date')" 
+                    onblur="(this.type='text')"
+                    [value]="dateTo()"
+                    (input)="dateTo.set($any($event.target).value)"
+                />
             </label>
         </div>
 
         <label>
-            <input type="text" placeholder="Wydawca" />
+            <input 
+                type="text" 
+                placeholder="Wydawca"
+                [value]="publisher()"
+                (input)="publisher.set($any($event.target).value)"
+            />
         </label>
 
-        <label>
-            <select>
-                <option value="" disabled selected>Kategoria</option>
-            </select>
-        </label>
-        
+        <div class="custom-multiselect" (click)="$event.stopPropagation()">
+            <div class="dropdown-header" (click)="toggleCategoryDropdown()" [class.is-open]="isCategoryOpen()">
+                <div class="chips-container">
+                    @if (selectedCategoriesObjects().length === 0) {
+                        <span class="placeholder-text">Kategoria</span>
+                    }
+                    @for (cat of selectedCategoriesObjects(); track cat.id) {
+                        <span class="chip">
+                            {{ cat.name }}
+                            <button type="button" class="chip-remove" (click)="removeSelection(cat.id, $event, selectedCategoryIds)">×</button>
+                        </span>
+                    }
+                </div>
+                <span class="arrow">@if(isCategoryOpen()) { &#9650; } @else { &#9660; }</span>
+            </div>
+
+            @if (isCategoryOpen()) {
+                <div class="dropdown-list">
+                    <div class="search-container">
+                        <input type="text" placeholder="Szukaj kategorii" [value]="searchCategoryTerm()" (input)="updateSearchTerm($event, searchCategoryTerm)" (click)="$event.stopPropagation()">
+                    </div>
+                    <div class="options-container">
+                        @for (cat of filteredCategories(); track cat.id) {
+                            <label class="dropdown-item" (click)="$event.stopPropagation()">
+                                <input type="checkbox" [checked]="selectedCategoryIds().includes(cat.id)" (change)="toggleSelection(cat.id, selectedCategoryIds)">
+                                <span class="custom-cb"></span> 
+                                <span class="label-text">{{ cat.name }}</span>
+                            </label>
+                        }
+                        @if (filteredCategories().length === 0) {
+                            <div class="no-results">Nie znaleziono kategorii</div>
+                        }
+                    </div>
+                </div>
+            }
+        </div>
+
+        <div class="custom-multiselect" (click)="$event.stopPropagation()">
+            <div class="dropdown-header" (click)="toggleLanguageDropdown()" [class.is-open]="isLanguageOpen()">
+                <div class="chips-container">
+                    @if (selectedLanguagesObjects().length === 0) {
+                        <span class="placeholder-text">Język</span>
+                    }
+                    @for (lang of selectedLanguagesObjects(); track lang.id) {
+                        <span class="chip">
+                            {{ lang.name }}
+                            <button type="button" class="chip-remove" (click)="removeSelection(lang.id, $event, selectedLanguageIds)">×</button>
+                        </span>
+                    }
+                </div>
+                <span class="arrow">@if(isLanguageOpen()) { &#9650; } @else { &#9660; }</span>
+            </div>
+
+            @if (isLanguageOpen()) {
+                <div class="dropdown-list">
+                    <div class="search-container">
+                        <input type="text" placeholder="Szukaj języka" [value]="searchLanguageTerm()" (input)="updateSearchTerm($event, searchLanguageTerm)" (click)="$event.stopPropagation()">
+                    </div>
+                    <div class="options-container">
+                        @for (lang of filteredLanguages(); track lang.id) {
+                            <label class="dropdown-item" (click)="$event.stopPropagation()">
+                                <input type="checkbox" [checked]="selectedLanguageIds().includes(lang.id)" (change)="toggleSelection(lang.id, selectedLanguageIds)">
+                                <span class="custom-cb"></span> 
+                                <span class="label-text">{{ lang.name }}</span>
+                            </label>
+                        }
+                        @if (filteredLanguages().length === 0) {
+                            <div class="no-results">Nie znaleziono języka</div>
+                        }
+                    </div>
+                </div>
+            }
+        </div>
+
+        <div class="form-actions" style="margin-top: 30px; display: flex; justify-content: center;">
+            <button 
+                type="button" 
+                (click)="onSubmit()" 
+                style="background-color: #4A3B28; color: white; padding: 15px 40px; border-radius: 25px; border: none; font-size: 16px; cursor: pointer;">
+                Szukaj książki
+            </button>
+        </div>
+
     </form>
 </div>
