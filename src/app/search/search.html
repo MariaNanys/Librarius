@@ -64,12 +64,12 @@
 
         <div class="search-date">
             <label>
-                <input type="text" placeholder="Rok wydania (od)" onfocus="(this.type='date')"
+                <input type="text" placeholder="Rok wydania (od)" onfocus="(this.type='number')"
                     onblur="(this.type='text')" [value]="dateFrom()"
                     (input)="dateFrom.set($any($event.target).value)" />
             </label>
             <label>
-                <input type="text" placeholder="Rok wydania (do)" onfocus="(this.type='date')"
+                <input type="text" placeholder="Rok wydania (do)" onfocus="(this.type='number')"
                     onblur="(this.type='text')" [value]="dateTo()" (input)="dateTo.set($any($event.target).value)" />
             </label>
         </div>
