@@ -1,3 +1,18 @@
+
+<div class="search-section">
+    <div class="search-input">
+        <span class="search-icon" (click)="onSearch(searchInput.value)" style="cursor: pointer;">
+            <img src="/assets/magnifying-glass.png" alt="ikona szkło powiększające">
+        </span>
+        
+        <input 
+            #searchInput 
+            type="text" 
+            placeholder="Wyszukaj książkę(tytuł)"
+            (keyup.enter)="onSearch(searchInput.value)"
+        >
+    </div>
+</div>
 <section class="recommendations">
     <div class="section-header">
         <h2>Nowości</h2>
