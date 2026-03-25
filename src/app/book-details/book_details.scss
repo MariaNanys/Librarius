@@ -38,9 +38,10 @@ $bg-color: #ffffff;
   margin-top: 2rem;
 }
 .details-container {
-  position: absolute;
-  width: 70%;
-  left: 300px;
+  margin-top: 30px;
+  display: flex;
+  flex-direction: column;
+  gap: 30px; /* Zapewnia ładny odstęp między kartą a bibliotekami */
 }
 /* --- KARTA KSIĄŻKI --- */
 .book-details-card {
