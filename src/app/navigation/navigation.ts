@@ -15,7 +15,7 @@ export class NavigationComponent {
   user = this.authService.currentUser;
   
   menuItems = signal([
-    { path: '/categories', label: 'Kategorie' },
+    { path: '/', label: 'Strona główna' },
     { path: '/search', label: 'Wyszukaj Książkę' },
   ])
   menuItemsLoged = signal([
