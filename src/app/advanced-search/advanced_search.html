@@ -79,7 +79,7 @@
                 (input)="publisher.set($any($event.target).value)" />
         </label>
 
-        <div class="custom-multiselect" (click)="$event.stopPropagation()">
+        <!-- <div class="custom-multiselect" (click)="$event.stopPropagation()">
             <div class="dropdown-header" (click)="toggleCategoryDropdown()" [class.is-open]="isCategoryOpen()">
                 <div class="chips-container">
                     @if (selectedCategoriesObjects().length === 0) {
@@ -117,7 +117,7 @@
                 </div>
             </div>
             }
-        </div>
+        </div> -->
 
         <div class="custom-multiselect" (click)="$event.stopPropagation()">
             <div class="dropdown-header" (click)="toggleLanguageDropdown()" [class.is-open]="isLanguageOpen()">
