@@ -1,9 +1,9 @@
 .main-navigation {
   width: 300px;
   position: sticky;
-  top: 0; /* Przykleja menu do samej góry okna przeglądarki */
-  height: 98vh; /* Menu rozciąga się na 100% wysokości ekranu */
-  overflow-y: auto; /* Zabezpieczenie: jeśli dodasz kiedyś 50 kategorii, menu będzie można przewijać wewnątrz niego samego */
+  top: 0;
+  height: 98vh;
+  overflow-y: auto;
   div a {
     display: flex;
     justify-content: center;

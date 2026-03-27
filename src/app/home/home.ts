@@ -25,14 +25,12 @@ export class HomeComponent implements OnInit {
   ];
 
   ngOnInit(): void {
-    // ZMIANA TUTAJ: Wywołujemy nową metodę z serwisu
     this.bookService.getSpecificCovers().subscribe({
       next: (books) => {
         this.recentBooks = books.map(book => ({
           ...book,
           cover_url: this.getBookCover(book.cover_url) 
         }));
-
         this.isLoading = false; 
         this.cdr.detectChanges(); 
       },
@@ -52,9 +50,7 @@ export class HomeComponent implements OnInit {
 
   onSearch(searchTerm: string): void {
     const query = searchTerm.trim();
-    
     if (query) {
-      console.log('Szukam książki o tytule:', query);
       this.router.navigate(['/search'], { queryParams: { q: query } });
     }
   }

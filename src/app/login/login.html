@@ -3,21 +3,21 @@
   <label>
     <input type="text" [formField]="loginForm.login" placeholder="e-mail / identyfikatora" />
     @if (loginForm.login().touched() && loginForm.login().errors(); as errors) {
-    <div class="error">
-      @for (error of errors; track error) {
-      <p>{{ error.message }}</p>
-      }
-    </div>
+      <div class="error">
+        @for (error of errors; track error) {
+          <p>{{ error.message }}</p>
+        }
+      </div>
     }
   </label>
   <label>
     <input type="password" [formField]="loginForm.password" placeholder="hasło" />
     @if (loginForm.password().touched() && loginForm.password().errors(); as errors) {
-    <div class="error">
-      @for (error of errors; track error) {
-      <p>{{ error.message }}</p>
-      }
-    </div>
+      <div class="error">
+        @for (error of errors; track error) {
+          <p>{{ error.message }}</p>
+        }
+      </div>
     }
   </label>
   <button class="btn" type="submit" [disabled]="loginForm().invalid()">Zaloguj się</button>

@@ -1,10 +1,8 @@
-
 <div class="search-section">
     <div class="search-input">
         <span class="search-icon" (click)="onSearch(searchInput.value)" style="cursor: pointer;">
             <img src="/assets/magnifying-glass.png" alt="ikona szkło powiększające">
         </span>
-        
         <input 
             #searchInput 
             type="text" 
@@ -17,7 +15,6 @@
     <div class="section-header">
         <h2>Nowości</h2>
     </div>
-
     @if (isLoading) {
         <p>Ładowanie nowości...</p>
     } @else {

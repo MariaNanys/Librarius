@@ -3,40 +3,46 @@ import { inject, Injectable, signal } from "@angular/core";
 import { environment } from "../../../environments/environment";
 import { Observable } from "rxjs";
 
+export interface User {
+    first_name: string;
+    last_name: string;
+    email: string;
+    province: string;
+}
+
 @Injectable({
     providedIn: 'root'
 })
-
 export class AuthService {
     #http: HttpClient = inject(HttpClient);
 
-    currentUser = signal<{ first_name: string } | null>(this.#getUserFromStorage());
+    currentUser = signal<User | null>(this.#getUserFromStorage());
 
-    #getUserFromStorage() {
+    #getUserFromStorage(): User | null {
         const stored = localStorage.getItem('user');
         return stored ? JSON.parse(stored) : null;
     }
 
-    setCurrentUser(user: { first_name: string }) {
+    setCurrentUser(user: User) {
         localStorage.setItem('user', JSON.stringify(user));
         this.currentUser.set(user);
     }
-    // W pliku auth.service.ts upewnij się, że metoda logout wygląda tak:
-  logout() {
-      localStorage.removeItem('user');
-      localStorage.removeItem('token'); // <-- Dodajemy usunięcie tokena!
-      this.currentUser.set(null);
-  }
+
+    logout() {
+        localStorage.removeItem('user');
+        localStorage.removeItem('token');
+        this.currentUser.set(null);
+    }
 
     register(data: any): Observable<any> {
         return this.#http.post(environment.apiUrl + '/auth/register', data);
     }
+
     login(data: any): Observable<any> {
         return this.#http.post(environment.apiUrl + '/auth/login', data);
     }
-// NOWA METODA: Pobiera dane użytkownika po jego ID
+
     getUserProfile(userId: string | number): Observable<any> {
-        // Zgodnie z Twoim endpointem: api/users/{user_id}
         return this.#http.get(environment.apiUrl + '/users/' + userId);
     }
 }

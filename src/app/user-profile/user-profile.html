@@ -1,0 +1,62 @@
+@if (user()) {
+  <h1>Moje dane</h1>
+  <form (submit)="onSubmit($event)">
+
+    <div class="field">
+      <span class="field-label">Imię</span>
+      @if (isEditing()) {
+        <input type="text" [value]="editModel().first_name"
+               (input)="editModel.update(m => ({...m, first_name: $any($event.target).value}))" />
+      } @else {
+        <span class="field-value">{{ user()!.first_name }}</span>
+      }
+    </div>
+
+    <div class="field">
+      <span class="field-label">Nazwisko</span>
+      @if (isEditing()) {
+        <input type="text" [value]="editModel().last_name"
+               (input)="editModel.update(m => ({...m, last_name: $any($event.target).value}))" />
+      } @else {
+        <span class="field-value">{{ user()!.last_name }}</span>
+      }
+    </div>
+
+    <div class="field">
+      <span class="field-label">Województwo</span>
+      @if (isEditing()) {
+        <select (change)="editModel.update(m => ({...m, province: $any($event.target).value}))">
+          @for (region of regions; track region.id) {
+            <option [value]="region.id" [selected]="region.id === +editModel().province">
+              {{ region.name }}
+            </option>
+          }
+        </select>
+      } @else {
+        <span class="field-value">{{ getRegionName(user()!.province) }}</span>
+      }
+    </div>
+
+    <div class="field">
+      <span class="field-label">Email</span>
+      @if (isEditing()) {
+        <input type="email" [value]="editModel().email"
+               (input)="editModel.update(m => ({...m, email: $any($event.target).value}))" />
+      } @else {
+        <span class="field-value">{{ user()!.email }}</span>
+      }
+    </div>
+
+    <div class="form-actions">
+      @if (isEditing()) {
+        <button type="submit">Zapisz zmiany</button>
+        <button type="button" class="btn-cancel" (click)="isEditing.set(false)">Anuluj</button>
+      } @else {
+        <button type="button" (click)="isEditing.set(true)">Zmień dane</button>
+      }
+    </div>
+
+  </form>
+} @else {
+  <p>Nie jesteś zalogowany.</p>
+}

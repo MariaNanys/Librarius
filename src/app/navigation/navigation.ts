@@ -1,5 +1,5 @@
 import { Component, inject, signal } from '@angular/core';
-import { Router, RouterLink, RouterLinkActive } from '@angular/router';
+import { RouterLink, RouterLinkActive } from '@angular/router';
 import { AuthService } from '../services/auth.service';
 
 @Component({
@@ -10,21 +10,15 @@ import { AuthService } from '../services/auth.service';
 })
 export class NavigationComponent {
   private authService = inject(AuthService);
-  private router = inject(Router); // <-- Wstrzykujemy Router
-  
+
   user = this.authService.currentUser;
-  
+
   menuItems = signal([
     { path: '/', label: 'Strona główna' },
     { path: '/advanced-search', label: 'Wyszukaj Książkę' },
-  ])
-  menuItemsLoged = signal([
-    { path: '/reservations', label: 'Moje rezerwacje' },
-    { path: '/user', label: 'Moje dane' },
-  ])
-// Nasza nowa metoda do wylogowywania
-  onLogout() {
-    this.authService.logout(); // Czyści sygnał i localStorage
-    this.router.navigate(['/login']); // Przekierowuje na stronę logowania (lub na '/')
+  ]);
+
+  get homeLink() {
+    return this.user() ? '/home-logged' : '/';
   }
 }
