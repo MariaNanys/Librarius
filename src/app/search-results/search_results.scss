@@ -1,0 +1,127 @@
+$primary-text: #4a3b28;
+$secondary-text: #9e9e9e;
+$olive-green: #a3ab85;
+$bg-white: #ffffff;
+$border-light: #f4f4f4;
+
+.results-container {
+  padding: 40px 50px;
+  width: calc(90%);
+
+  @media (max-width: 1024px) {
+    margin-left: auto;
+    width: 100%;
+    padding: 20px;
+  }
+}
+
+.page-title {
+  font-size: 22px;
+  color: $primary-text;
+  font-weight: 500;
+  margin-bottom: 30px;
+  
+  span {
+    font-weight: 400; /* Szukana fraza zgodnie z makietą jest odrobinę "lżejsza" */
+  }
+}
+
+.results-card {
+  background: $bg-white;
+  border-radius: 25px;
+  padding: 30px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+}
+
+/* --- MAGIA CSS GRID DLA TABELI --- */
+/* Te same szerokości kolumn dla nagłówka i wierszy danych! */
+.table-header, .table-row {
+  display: grid;
+  grid-template-columns: 2fr 1.5fr 1.5fr 1.5fr 1fr; /* Proporcje kolumn */
+  align-items: center;
+  gap: 20px;
+}
+
+.table-header {
+  padding-bottom: 20px;
+  border-bottom: 1px solid $border-light;
+  font-size: 14px;
+  color: #c0c0c0; /* Szary tekst nagłówków z Twojego projektu */
+  font-weight: 400;
+}
+
+.table-row {
+  padding: 15px 0;
+  border-bottom: 1px solid $border-light;
+  transition: background-color 0.2s;
+
+  &:last-child {
+    border-bottom: none; /* Ukrywamy ostatnią linię */
+  }
+
+  &:hover {
+    background-color: #fbfbfb; /* Delikatny efekt po najechaniu */
+  }
+}
+
+/* --- DETALE KOLUMN --- */
+.col-title {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+
+  .small-cover {
+    width: 35px; /* Bardzo mała okładka wg makiety */
+    height: 50px;
+    object-fit: cover;
+    border-radius: 4px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.08);
+  }
+
+  .book-title {
+    color: $primary-text;
+    font-weight: 500;
+    font-size: 15px;
+  }
+}
+
+/* Jeśli "Autorzy" będą za długą linią tekstu, to się utnie i doda (...) */
+.truncate {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: 14px;
+  color: $secondary-text;
+}
+
+.col-action {
+  text-align: right; /* Przycisk dosunięty do prawej */
+}
+
+.details-btn {
+  display: inline-block;
+  background-color: $olive-green;
+  color: white;
+  padding: 8px 24px;
+  border-radius: 20px; /* Zaokrąglenie w pigułkę */
+  text-decoration: none;
+  font-size: 13px;
+  font-weight: 600;
+  transition: opacity 0.2s, transform 0.1s;
+
+  &:hover {
+    opacity: 0.85;
+  }
+  
+  &:active {
+    transform: scale(0.97);
+  }
+}
+
+/* --- Komunikaty --- */
+.status-message {
+  padding: 40px;
+  text-align: center;
+  color: $secondary-text;
+  font-size: 16px;
+}
