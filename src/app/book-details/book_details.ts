@@ -1,6 +1,6 @@
-// 1. Upewnij się, że importujesz ChangeDetectorRef
 import { Component, inject, OnInit, ChangeDetectorRef } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router'; // Dodano Router
+import { Location } from '@angular/common'; // Dodano Location
 import { BookService } from '../services/book.service';
 
 @Component({
@@ -10,23 +10,33 @@ import { BookService } from '../services/book.service';
   standalone: true
 })
 export class BookDetailsComponent implements OnInit {
+  // --- WSTRZYKIWANIE ZALEŻNOŚCI ---
   private route = inject(ActivatedRoute);
+  private router = inject(Router); // Potrzebne do przekierowania po wpisaniu nowej frazy
+  private location = inject(Location); // Potrzebne do przycisku "Wstecz"
   private bookService = inject(BookService);
-  
-  // 2. Wstrzykujemy ChangeDetectorRef
   private cdr = inject(ChangeDetectorRef);
 
+  // --- STAN KOMPONENTU ---
   bookId: string | null = null;
   bookDetails: any = null;
   isLoading = true;
   isExpanded = false;
 
-  readonly fallbackDescription = 'Brak opisu dla tej książki. Lorem ipsum dolor sit amet, consectetur adipiscing elit...';
+  readonly fallbackDescription = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.';
 
+  // --- MOCK DANYCH BIBLIOTEK ---
+  libraries = [
+    { name: 'Biblioteka narodowa', address: 'ul. Ogrodowa 58, Gdańsk', available: true },
+    { name: 'Biblioteka miejska nr 23', address: 'ul. Hoża 28, Gdańsk', available: false }
+  ];
+
+  // --- GETTERY I OBSŁUGA OPISU ---
   get displayDescription(): string {
     return this.bookDetails?.description || this.fallbackDescription;
   }
 
+// Sprawdzamy, czy faktycznie wyświetlany opis (displayDescription) jest długi
   get isLongDescription(): boolean {
     return this.displayDescription.length > 200; 
   }
@@ -36,13 +46,8 @@ export class BookDetailsComponent implements OnInit {
     this.isExpanded = !this.isExpanded;
   }
 
-  libraries = [
-    { name: 'Biblioteka narodowa', address: 'ul. Ogrodowa 58, Gdańsk', available: true },
-    { name: 'Biblioteka miejska nr 23', address: 'ul. Hoża 28, Gdańsk', available: false }
-  ];
-
+  // --- CYKL ŻYCIA KOMPONENTU (POBIERANIE DANYCH) ---
   ngOnInit(): void {
-    // 3. Zamieniamy 'snapshot' na 'subscribe', by nasłuchiwać zmian w pasku adresu
     this.route.paramMap.subscribe(params => {
       this.bookId = params.get('id');
       
@@ -55,16 +60,12 @@ export class BookDetailsComponent implements OnInit {
           next: (data) => {
             this.bookDetails = data;
             this.isLoading = false;
-            
-            // 4. SZTURCHAMY ANGULARA: "Hej, dane przyszły, przerysuj widok!"
-            this.cdr.detectChanges(); 
+            this.cdr.detectChanges(); // Wymuszamy przerysowanie widoku
           },
           error: (err) => {
             console.error('Błąd pobierania szczegółów:', err);
             this.isLoading = false;
-            
-            // W razie błędu też wymuszamy przerysowanie
-            this.cdr.detectChanges(); 
+            this.cdr.detectChanges(); // Wymuszamy przerysowanie widoku
           }
         });
       }
@@ -73,5 +74,21 @@ export class BookDetailsComponent implements OnInit {
 
   getCover(url: string | null | undefined): string {
     return url ? url : '/assets/book_1.webp'; 
+  }
+
+  // --- NOWE METODY: NAWIGACJA I WYSZUKIWANIE ---
+
+  // Metoda wywoływana przez przycisk powrotu
+  goBack(): void {
+    this.location.back();
+  }
+
+  // Metoda wywoływana z inputa (po Enter lub kliknięciu w lupę)
+  onSearch(searchTerm: string): void {
+    const query = searchTerm.trim();
+    if (query) {
+      console.log('Nowe wyszukiwanie z detali książki:', query);
+      this.router.navigate(['/search'], { queryParams: { q: query } });
+    }
   }
 }

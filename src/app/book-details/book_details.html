@@ -1,77 +1,90 @@
 <div class="search-section">
     <div class="search-input">
-        <span class="search-icon">
+        <span class="search-icon" (click)="onSearch(searchInput.value)" style="cursor: pointer;">
             <img src="/assets/magnifying-glass.png" alt="Szukaj">
         </span>
-        <input type="text" placeholder="Wyszukaj książkę(tytuł)">
+        
+        <input 
+            #searchInput 
+            type="text" 
+            placeholder="Wyszukaj książkę"
+            (keyup.enter)="onSearch(searchInput.value)"
+        >
     </div>
 </div>
 
 @if (isLoading) {
-<p class="loading-text">Ładowanie szczegółów książki...</p>
+    <p class="loading-text">Ładowanie szczegółów książki...</p>
 } @else if (bookDetails) {
-<div class="details-container">
-    <div class="book-details-card">
-        <div class="card-header">
-            <h1 class="book-title">{{ bookDetails.title }}</h1>
-            <h2 class="book-author">{{ bookDetails.authors?.[0]?.name || 'Nieznany autor' }}</h2>
+    
+    <div class="details-container">
+        
+        <div class="back-button-container">
+            <button class="back-btn" (click)="goBack()">
+                &larr; Powrót 
+            </button>
         </div>
 
-        <div class="card-content">
-            <div class="cover-wrapper">
-                <img [src]="getCover(bookDetails.cover_url)" alt="Okładka" class="book-cover">
+        <div class="book-details-card">
+            <div class="card-header">
+                <h1 class="book-title">{{ bookDetails.title }}</h1>
+                <h2 class="book-author">{{ bookDetails.authors?.[0]?.name || 'Nieznany autor' }}</h2>
             </div>
 
-            <div class="metadata-wrapper">
-                <ul class="details-list">
-                    <li><span class="label">Tytuł:</span> {{ bookDetails.title }}</li>
-                    <li><span class="label">Autor:</span> {{ bookDetails.authors?.[0]?.name }}</li>
-                    <li><span class="label">Rok wydania:</span> {{ bookDetails.published_year }}</li>
-                    <li><span class="label">ISBN:</span> {{ bookDetails.isbn }}</li>
-                    <li><span class="label">Kategorie:</span> {{ bookDetails.categories || 'Brak danych' }}</li>
-                    <li><span class="label">Wydawnictwo:</span> {{ bookDetails.publisher }}</li>
-                </ul>
+            <div class="card-content">
+                <div class="cover-wrapper">
+                    <img [src]="getCover(bookDetails.cover_url)" alt="Okładka" class="book-cover">
+                </div>
 
-                <div class="description-box">
-                    <span class="label">Opis:</span>
-                    
-                    <p class="description-text" [class.expanded]="isExpanded">
-                        {{ bookDetails.description || 'Brak opisu dla tej książki. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.' }}
-                    </p>
-                    
-                    @if (isLongDescription) {
-                        <div class="read-more-container">
-                            <a href="#" class="read-more" (click)="toggleDescription($event)">
-                                {{ isExpanded ? 'Zwiń <' : 'Czytaj więcej >' }}
-                            </a>
-                        </div>
-                    }
+                <div class="metadata-wrapper">
+                    <ul class="details-list">
+                        <li><span class="label">Tytuł:</span> {{ bookDetails.title }}</li>
+                        <li><span class="label">Autor:</span> {{ bookDetails.authors?.[0]?.name }}</li>
+                        <li><span class="label">Rok wydania:</span> {{ bookDetails.published_year }}</li>
+                        <li><span class="label">ISBN:</span> {{ bookDetails.isbn }}</li>
+                        <li><span class="label">Kategorie:</span> {{ bookDetails.categories || 'Brak danych' }}</li>
+                        <li><span class="label">Wydawnictwo:</span> {{ bookDetails.publisher }}</li>
+                    </ul>
+
+                    <div class="description-box">
+                        <span class="label">Opis:</span>
+                        
+                        <p class="description-text" [class.expanded]="isExpanded">
+                            {{ displayDescription }}
+                        </p>
+                        
+                        @if (isLongDescription) {
+                            <div class="read-more-container">
+                                <a href="#" class="read-more" (click)="toggleDescription($event)">
+                                    {{ isExpanded ? 'Zwiń <' : 'Czytaj więcej >' }}
+                                </a>
+                            </div>
+                        }
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
 
-    <div class="availability-section">
-        @for (lib of libraries; track lib.name) {
-        <div class="library-row">
-            <div class="lib-info">
-                <span class="lib-name">{{ lib.name }}</span>,
-                <span class="lib-address">{{ lib.address }}</span>
-            </div>
+        <div class="availability-section">
+            @for (lib of libraries; track lib.name) {
+                <div class="library-row">
+                    <div class="lib-info">
+                        <span class="lib-name">{{ lib.name }}</span>,
+                        <span class="lib-address">{{ lib.address }}</span>
+                    </div>
 
-            <div class="lib-status" [class.status-available]="lib.available"
-                [class.status-unavailable]="!lib.available">
-                {{ lib.available ? 'Dostępna' : 'Niedostępne' }}
-            </div>
+                    <div class="lib-status" [class.status-available]="lib.available" [class.status-unavailable]="!lib.available">
+                        {{ lib.available ? 'Dostępna' : 'Niedostępne' }}
+                    </div>
 
-            <button class="reserve-btn" [class.btn-disabled]="!lib.available" [disabled]="!lib.available">
-                Zarezerwuj
-            </button>
+                    <button class="reserve-btn" [class.btn-disabled]="!lib.available" [disabled]="!lib.available">
+                        Zarezerwuj
+                    </button>
+                </div>
+            }
         </div>
-        }
-    </div>
-</div>
 
+    </div>
 } @else {
-<p>Nie znaleziono książki.</p>
+    <p>Nie znaleziono książki.</p>
 }

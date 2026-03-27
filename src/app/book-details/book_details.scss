@@ -239,3 +239,28 @@ $bg-color: #ffffff;
     cursor: not-allowed;
   }
 }
+
+/* --- PRZYCISK POWROTU --- */
+.back-button-container {
+  /* Margines odciąga przycisk od białej karty książki */
+  margin-bottom: -15px; 
+  
+  .back-btn {
+    background: transparent;
+    border: none;
+    color: #888; /* Szary, dyskretny kolor bazowy */
+    font-size: 15px;
+    font-weight: 500;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 0;
+    transition: color 0.3s;
+
+    &:hover {
+      color: #4A3B28; /* Głęboki brąz z Twojej palety po najechaniu */
+      text-decoration: underline;
+    }
+  }
+}
