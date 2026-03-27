@@ -7,7 +7,7 @@ export interface User {
     first_name: string;
     last_name: string;
     email: string;
-    province: string;
+    region: string;
 }
 
 @Injectable({
@@ -44,5 +44,9 @@ export class AuthService {
 
     getUserProfile(userId: string | number): Observable<any> {
         return this.#http.get(environment.apiUrl + '/users/' + userId);
+    }
+
+    updateUser(data: Partial<User>): Observable<any> {
+    return this.#http.put(environment.apiUrl + '/auth/user', data);
     }
 }

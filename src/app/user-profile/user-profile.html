@@ -5,8 +5,12 @@
     <div class="field">
       <span class="field-label">Imię</span>
       @if (isEditing()) {
-        <input type="text" [value]="editModel().first_name"
-               (input)="editModel.update(m => ({...m, first_name: $any($event.target).value}))" />
+        <input type="text" [formField]="editForm.first_name" placeholder="Imię" />
+        @if (editForm.first_name().touched() && editForm.first_name().errors(); as errors) {
+          @for (error of errors; track error) {
+            <p class="error">{{ error.message }}</p>
+          }
+        }
       } @else {
         <span class="field-value">{{ user()!.first_name }}</span>
       }
@@ -15,8 +19,12 @@
     <div class="field">
       <span class="field-label">Nazwisko</span>
       @if (isEditing()) {
-        <input type="text" [value]="editModel().last_name"
-               (input)="editModel.update(m => ({...m, last_name: $any($event.target).value}))" />
+        <input type="text" [formField]="editForm.last_name" placeholder="Nazwisko" />
+        @if (editForm.last_name().touched() && editForm.last_name().errors(); as errors) {
+          @for (error of errors; track error) {
+            <p class="error">{{ error.message }}</p>
+          }
+        }
       } @else {
         <span class="field-value">{{ user()!.last_name }}</span>
       }
@@ -25,23 +33,27 @@
     <div class="field">
       <span class="field-label">Województwo</span>
       @if (isEditing()) {
-        <select (change)="editModel.update(m => ({...m, province: $any($event.target).value}))">
-          @for (region of regions; track region.id) {
-            <option [value]="region.id" [selected]="region.id === +editModel().province">
-              {{ region.name }}
+        <select [formField]="editForm.region">
+          @for (r of regions; track r.id) {
+            <option [value]="r.id" [selected]="r.id === +editModel().region">
+              {{ r.name }}
             </option>
           }
         </select>
       } @else {
-        <span class="field-value">{{ getRegionName(user()!.province) }}</span>
+        <span class="field-value">{{ getRegionName(user()!.region) }}</span>
       }
     </div>
 
     <div class="field">
       <span class="field-label">Email</span>
       @if (isEditing()) {
-        <input type="email" [value]="editModel().email"
-               (input)="editModel.update(m => ({...m, email: $any($event.target).value}))" />
+        <input type="email" [formField]="editForm.email" placeholder="Email" />
+        @if (editForm.email().touched() && editForm.email().errors(); as errors) {
+          @for (error of errors; track error) {
+            <p class="error">{{ error.message }}</p>
+          }
+        }
       } @else {
         <span class="field-value">{{ user()!.email }}</span>
       }
@@ -49,7 +61,7 @@
 
     <div class="form-actions">
       @if (isEditing()) {
-        <button type="submit">Zapisz zmiany</button>
+        <button type="submit" [disabled]="editForm().invalid()">Zapisz zmiany</button>
         <button type="button" class="btn-cancel" (click)="isEditing.set(false)">Anuluj</button>
       } @else {
         <button type="button" (click)="isEditing.set(true)">Zmień dane</button>

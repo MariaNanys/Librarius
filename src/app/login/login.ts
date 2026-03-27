@@ -43,7 +43,7 @@ export class LoginComponent {
             first_name: userProfile.first_name,
             last_name: userProfile.last_name,
             email: userProfile.email,
-            province: userProfile.region,
+            region: userProfile.region,
           });
           await this.router.navigate(['/']);
         } catch (error) {

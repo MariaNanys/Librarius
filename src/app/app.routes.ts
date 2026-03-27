@@ -16,6 +16,5 @@ export const routes: Routes = [
     { path: 'search', component: SearchResultsComponent },
     { path: 'advanced-search', component: AdvanceSearchComponent },
     { path: 'book/:id', component: BookDetailsComponent },
-    { path: 'registration', component: RegistrationComponent },
     { path: 'profile', component: UserProfileComponent },
 ];

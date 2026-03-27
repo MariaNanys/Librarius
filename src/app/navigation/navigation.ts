@@ -17,8 +17,4 @@ export class NavigationComponent {
     { path: '/', label: 'Strona główna' },
     { path: '/advanced-search', label: 'Wyszukaj Książkę' },
   ]);
-
-  get homeLink() {
-    return this.user() ? '/home-logged' : '/';
-  }
 }

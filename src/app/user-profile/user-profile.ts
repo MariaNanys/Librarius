@@ -1,17 +1,15 @@
 import { Component, inject, signal } from '@angular/core';
 import { AuthService } from '../services/auth.service';
-import { HttpClient } from '@angular/common/http';
-import { environment } from '../../../environments/environment';
+import { form, FormField, required, submit } from '@angular/forms/signals';
 
 @Component({
   selector: 'app-user-profile',
-  imports: [],
+  imports: [FormField],
   templateUrl: './user-profile.html',
   styleUrl: './user-profile.scss'
 })
 export class UserProfileComponent {
   private authService = inject(AuthService);
-  private http = inject(HttpClient);
 
   user = this.authService.currentUser;
   isEditing = signal(false);
@@ -38,8 +36,14 @@ export class UserProfileComponent {
   editModel = signal({
     first_name: this.user()?.first_name ?? '',
     last_name: this.user()?.last_name ?? '',
-    province: this.user()?.province ?? '',
+    region: this.user()?.region ?? '',
     email: this.user()?.email ?? '',
+  });
+
+  editForm = form(this.editModel, (s) => {
+    required(s.first_name, { message: 'Imię jest wymagane' });
+    required(s.last_name, { message: 'Nazwisko jest wymagane' });
+    required(s.email, { message: 'Email jest wymagany' });
   });
 
   getRegionName(id: number | string): string {
@@ -49,10 +53,14 @@ export class UserProfileComponent {
 
   onSubmit(event: Event) {
     event.preventDefault();
-    const data = this.editModel();
-    this.http.patch(environment.apiUrl + '/auth/user', data).subscribe((result: any) => {
-      this.authService.setCurrentUser(result.user ?? data);
-      this.isEditing.set(false);
+    submit(this.editForm, {
+      action: async () => {
+        const data = this.editModel();
+        this.authService.updateUser(data).subscribe((result: any) => {
+          this.authService.setCurrentUser(result.user ?? data);
+          this.isEditing.set(false);
+        });
+      }
     });
   }
 }
