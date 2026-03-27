@@ -2,7 +2,7 @@ import { Routes } from '@angular/router';
 import { HomeComponent } from './home/home';
 import { LoginComponent } from './login/login';
 import { RegistrationComponent } from './registration/registration';
-import { SearchComponent } from './search/search';
+import { AdvanceSearchComponent } from './advanced-search/advanced_search';
 import { RegisterSuccessComponent } from './register-succes/register_success';
 import { BookDetailsComponent } from './book-details/book_details';
 import { SearchResultsComponent } from './search-results/search_results';
@@ -13,6 +13,6 @@ export const routes: Routes = [
     {path: 'register', component: RegistrationComponent},
     {path: 'register-success', component: RegisterSuccessComponent},
     {path: 'search', component: SearchResultsComponent},
-    {path: 'advanced-search', component: SearchComponent},
+    {path: 'advanced-search', component: AdvanceSearchComponent},
     {path: 'book/:id', component: BookDetailsComponent },
 ];

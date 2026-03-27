@@ -16,14 +16,14 @@ export interface SearchBookPayload {
 }
 
 @Component({
-  selector: 'app-search',
+  selector: 'app-advanced_search',
   standalone: true,
   imports: [RouterLink],
-  templateUrl: './search.html',
-  styleUrl: './search.scss',
+  templateUrl: './advanced_search.html',
+  styleUrl: './advanced_search.scss',
   changeDetection: ChangeDetectionStrategy.OnPush 
 })
-export class SearchComponent implements OnInit {
+export class AdvanceSearchComponent implements OnInit {
   private searchService = inject(SearchAdvanceService);
   private authService = inject(AuthService);
 

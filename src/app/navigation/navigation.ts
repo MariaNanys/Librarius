@@ -16,7 +16,7 @@ export class NavigationComponent {
   
   menuItems = signal([
     { path: '/', label: 'Strona główna' },
-    { path: '/search', label: 'Wyszukaj Książkę' },
+    { path: '/advanced-search', label: 'Wyszukaj Książkę' },
   ])
   menuItemsLoged = signal([
     { path: '/reservations', label: 'Moje rezerwacje' },
