@@ -1,6 +1,6 @@
 import { Component, inject, signal } from "@angular/core";
 import { form, FormField, pattern, required, submit } from "@angular/forms/signals";
-import { Router, RouterLink } from "@angular/router";
+import { Router } from "@angular/router";
 import { AuthService } from "../services/auth.service";
 import { jwtDecode } from "jwt-decode";
 import { firstValueFrom } from "rxjs"; // <-- Dodano ten import
@@ -9,7 +9,7 @@ import { firstValueFrom } from "rxjs"; // <-- Dodano ten import
   selector: 'app-login',
   templateUrl: './login.html',
   styleUrl: './login.scss',
-  imports: [FormField, RouterLink,]
+  imports: [FormField]
 })
 export class LoginComponent {
   authService: AuthService = inject(AuthService);

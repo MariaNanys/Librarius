@@ -1,13 +1,12 @@
 import { Component, inject, signal } from "@angular/core";
 import { email, form, FormField, minLength, pattern, required, submit, validate } from "@angular/forms/signals";
-import { RouterLink } from "@angular/router";
 import { AuthService } from "../services/auth.service";
 
 @Component({
     selector: 'app-registration',
     templateUrl: './registration.html',
     styleUrl: './registration.scss',
-    imports: [FormField, RouterLink]
+    imports: [FormField]
 })
 
 export class RegistrationComponent {

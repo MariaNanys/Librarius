@@ -1,6 +1,5 @@
 import { Component, signal, computed, inject, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { SearchAdvanceService } from '../services/search-advance.service';
-import { RouterLink } from '@angular/router';
 import { AuthService } from '../services/auth.service';
 
 // Interfejs określający strukturę danych wysyłanych do Backendu
@@ -18,7 +17,7 @@ export interface SearchBookPayload {
 @Component({
   selector: 'app-advanced_search',
   standalone: true,
-  imports: [RouterLink],
+  imports: [],
   templateUrl: './advanced_search.html',
   styleUrl: './advanced_search.scss',
   changeDetection: ChangeDetectionStrategy.OnPush 
