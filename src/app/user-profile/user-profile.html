@@ -48,7 +48,12 @@
     <div class="field">
       <span class="field-label">Email</span>
       @if (isEditing()) {
-        <input type="email" [formField]="editForm.email" placeholder="Email" />
+       <input 
+          type="email" 
+          [value]="user()?.email" 
+          placeholder="Email" 
+          readonly 
+        />
         @if (editForm.email().touched() && editForm.email().errors(); as errors) {
           @for (error of errors; track error) {
             <p class="error">{{ error.message }}</p>

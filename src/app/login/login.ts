@@ -36,15 +36,7 @@ export class LoginComponent {
         try {
           const result: any = await firstValueFrom(this.authService.login(credentials));
           localStorage.setItem('token', result.token);
-          const decodedToken: any = jwtDecode(result.token);
-          const userId = decodedToken.sub;
-          const userProfile: any = await firstValueFrom(this.authService.getUserProfile(userId));
-          this.authService.setCurrentUser({
-            first_name: userProfile.first_name,
-            last_name: userProfile.last_name,
-            email: userProfile.email,
-            region: userProfile.region,
-          });
+          this.authService.setUserToStorage(result.token);
           await this.router.navigate(['/']);
         } catch (error) {
           console.error('Błąd logowania lub pobierania profilu:', error);

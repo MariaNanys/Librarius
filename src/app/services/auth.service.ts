@@ -2,8 +2,10 @@ import { HttpClient } from "@angular/common/http";
 import { inject, Injectable, signal } from "@angular/core";
 import { environment } from "../../../environments/environment";
 import { Observable } from "rxjs";
+import { jwtDecode } from "jwt-decode";
 
 export interface User {
+    sub: number;
     first_name: string;
     last_name: string;
     email: string;
@@ -19,19 +21,23 @@ export class AuthService {
     currentUser = signal<User | null>(this.#getUserFromStorage());
 
     #getUserFromStorage(): User | null {
-        const stored = localStorage.getItem('user');
-        return stored ? JSON.parse(stored) : null;
+        const token = localStorage.getItem('token');
+        return token ? jwtDecode(token) : null;
     }
 
-    setCurrentUser(user: User) {
-        localStorage.setItem('user', JSON.stringify(user));
-        this.currentUser.set(user);
+    setUserToStorage(token: string) {
+        this.currentUser.set(jwtDecode(token));
     }
 
     logout() {
-        localStorage.removeItem('user');
+        this.logoutBackend().subscribe((result) => {
         localStorage.removeItem('token');
         this.currentUser.set(null);
+        })
+    }
+
+    logoutBackend(): Observable<any> {
+        return this.#http.post(environment.apiUrl + '/auth/logout', {token:localStorage.getItem('token')});
     }
 
     register(data: any): Observable<any> {
@@ -46,7 +52,7 @@ export class AuthService {
         return this.#http.get(environment.apiUrl + '/users/' + userId);
     }
 
-    updateUser(data: Partial<User>): Observable<any> {
-    return this.#http.put(environment.apiUrl + '/auth/user', data);
+    updateUser(userId: number, data: Partial<User>): Observable<any> {
+    return this.#http.put(environment.apiUrl + '/users/'+userId, data);
     }
 }

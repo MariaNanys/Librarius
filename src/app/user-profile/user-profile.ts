@@ -1,6 +1,6 @@
 import { Component, inject, signal } from '@angular/core';
 import { AuthService } from '../services/auth.service';
-import { form, FormField, required, submit } from '@angular/forms/signals';
+import { form, FormField, required, email, submit } from '@angular/forms/signals';
 
 @Component({
   selector: 'app-user-profile',
@@ -43,6 +43,7 @@ export class UserProfileComponent {
   editForm = form(this.editModel, (s) => {
     required(s.first_name, { message: 'Imię jest wymagane' });
     required(s.last_name, { message: 'Nazwisko jest wymagane' });
+    email(s.email, { message: 'Niepoprawny email' });
     required(s.email, { message: 'Email jest wymagany' });
   });
 
@@ -56,10 +57,15 @@ export class UserProfileComponent {
     submit(this.editForm, {
       action: async () => {
         const data = this.editModel();
-        this.authService.updateUser(data).subscribe((result: any) => {
-          this.authService.setCurrentUser(result.user ?? data);
+        const userId = this.user()?.sub;
+        if(userId){
+        this.authService.updateUser(userId, data).subscribe((result: any) => {
+          if(result) {
+          this.authService.logout();
           this.isEditing.set(false);
+          }
         });
+        }
       }
     });
   }
