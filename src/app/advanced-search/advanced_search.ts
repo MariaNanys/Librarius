@@ -10,7 +10,7 @@ export interface SearchBookPayload {
   date_from?: string;
   date_to?: string;
   publisher?: string;
-  category_ids?: number[];
+  // category_ids?: number[];
   language_ids?: number[];
 }
 
@@ -82,7 +82,7 @@ export class AdvanceSearchComponent implements OnInit {
   // ==========================================
   ngOnInit() {
     this.searchService.getAuthors().subscribe({ next: data => this.authors.set(data), error: err => console.error(err) });
-    this.searchService.getCategories().subscribe({ next: data => this.categories.set(data), error: err => console.error(err) });
+    // this.searchService.getCategories().subscribe({ next: data => this.categories.set(data), error: err => console.error(err) });
     this.searchService.getLanguages().subscribe({ next: data => this.languages.set(data), error: err => console.error(err) });
   }
 
@@ -95,11 +95,11 @@ export class AdvanceSearchComponent implements OnInit {
     this.isLanguageOpen.set(false);
   }
 
-  toggleCategoryDropdown() {
-    this.isCategoryOpen.update(v => !v);
-    this.isAuthorOpen.set(false);
-    this.isLanguageOpen.set(false);
-  }
+  // toggleCategoryDropdown() {
+  //   this.isCategoryOpen.update(v => !v);
+  //   this.isAuthorOpen.set(false);
+  //   this.isLanguageOpen.set(false);
+  // }
 
   toggleLanguageDropdown() {
     this.isLanguageOpen.update(v => !v);
@@ -133,7 +133,7 @@ export class AdvanceSearchComponent implements OnInit {
       date_from: this.dateFrom(),
       date_to: this.dateTo(),
       publisher: this.publisher(),
-      category_ids: this.selectedCategoryIds(),
+      // category_ids: this.selectedCategoryIds(),
       language_ids: this.selectedLanguageIds()
     };
 
@@ -144,7 +144,7 @@ export class AdvanceSearchComponent implements OnInit {
     if (!payload.date_to) delete payload.date_to;
     if (!payload.publisher) delete payload.publisher;
     if (payload.author_ids && payload.author_ids.length === 0) delete payload.author_ids;
-    if (payload.category_ids && payload.category_ids.length === 0) delete payload.category_ids;
+    // if (payload.category_ids && payload.category_ids.length === 0) delete payload.category_ids;
     if (payload.language_ids && payload.language_ids.length === 0) delete payload.language_ids;
 
     console.log('Gotowe do wysłania na BE:', payload);
