@@ -1,24 +1,27 @@
 <div class="navigation">
   <app-navigation></app-navigation>
 </div>
-<div class="app-component">
-  
+<div class="main-area">
   <header class="top-bar">
-    @if (user(); as loggedUser) {
-      <p>Cześć, {{ loggedUser.first_name }}!</p>
-    }
-    @else {
-      
-      @if (router.url === '/login') {
-        <button class="btn btn-login" routerLink="/register">Rejestracja</button>
-      } 
-      @else {
-        <button class="btn btn-login" routerLink="/login">Logowanie</button>
-      }
-      
+    @if (user()) {
+      <div class="dropdown-wrap">
+        <button class="dropdown-trigger" (click)="toggleDropdown()">
+          Cześć, {{ user()!.first_name }}! ▾
+        </button>
+        @if (dropdownOpen()) {
+          <div class="dropdown-menu">
+            <a routerLink="/profile" (click)="closeDropdown()">Moje dane</a>
+            <button (click)="logout()">Wyloguj</button>
+          </div>
+        }
+      </div>
+    } @else if (currentPath() === '/login') {
+      <button class="btn-login" routerLink="/register">Rejestracja</button>
+    } @else {
+      <button class="btn-login" routerLink="/login">Logowanie</button>
     }
   </header>
-
-  <router-outlet></router-outlet>
-  
+  <div class="app-component">
+    <router-outlet></router-outlet>
+  </div>
 </div>
