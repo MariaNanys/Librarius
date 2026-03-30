@@ -2,8 +2,9 @@ import { Component, inject, OnInit, ChangeDetectorRef } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router'; // Dodano Router
 import { Location } from '@angular/common'; // Dodano Location
 import { BookService } from '../services/book.service';
-import { forkJoin } from 'rxjs';
+import { forkJoin, of } from 'rxjs';
 import { SearchAdvanceService } from '../services/search-advance.service';
+import { catchError } from 'rxjs/operators';
 
 @Component({
   selector: 'app-book-details',
@@ -55,25 +56,42 @@ export class BookDetailsComponent implements OnInit {
       this.isLoading = true;
       this.bookDetails = null;
 
-      if (this.bookId) {
-        forkJoin([this.bookService.getBookDetails(this.bookId),this.searchAdvanceService.searchAdvanced({id: this.bookId})])
+     if (this.bookId) {
+        forkJoin([
+          // 1. Zapytanie o szczegóły książki (główne, musi się udać)
+          this.bookService.getBookDetails(this.bookId),
+          
+          // 2. Zapytanie o biblioteki (łapiemy błąd 401 i zwracamy null)
+          this.searchAdvanceService.searchAdvanced({id: this.bookId}).pipe(
+            catchError((err) => {
+              console.warn('Nie udało się pobrać bibliotek (np. brak autoryzacji), zwracam pusty stan.');
+              return of(null); // <--- Zwracamy sztuczną, pustą odpowiedź
+            })
+          )
+        ])
         .subscribe({
           next: (data) => {
-            this.bookDetails = data[0];
-            this.libraries = data[1][0].libraries;
-            console.log(data);
+            this.bookDetails = data[0]; 
+            const libraryData = data[1];
+            if (libraryData && libraryData.length > 0) {
+              this.libraries = libraryData[0].libraries;
+            } else {
+              this.libraries = [];
+            }
+            
             this.isLoading = false;
-            this.cdr.detectChanges(); // Wymuszamy przerysowanie widoku
+            this.cdr.detectChanges();
           },
           error: (err) => {
-            console.error('Błąd pobierania szczegółów:', err);
+            console.error('Błąd pobierania głównych szczegółów książki:', err);
             this.isLoading = false;
-            this.cdr.detectChanges(); // Wymuszamy przerysowanie widoku
+            this.cdr.detectChanges();
           }
         });
       }
-    });
+    })
   }
+      
 
   getCover(url: string | null | undefined): string {
     return url ? url : '/assets/book_1.webp'; 
