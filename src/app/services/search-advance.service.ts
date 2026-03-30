@@ -25,6 +25,14 @@ export class SearchAdvanceService {
   // 2. Miejsce na przyszłą metodę wysyłającą cały formularz do BE
   searchBooks(payload: any): Observable<any> {
     // Zakładam przykładowy endpoint do wyszukiwania
-    return this.#http.post(`${environment.apiUrl}/books/search`, payload);
+    return this.#http.get(`${environment.apiUrl}/search/books`, {
+      params: payload
+    });
+  }
+
+  searchAdvanced(payload: any): Observable<any> {
+    return this.#http.get(`${environment.apiUrl}/search/books/advanced`, {
+      params: payload
+    });
   }
 }

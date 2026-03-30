@@ -70,14 +70,14 @@
                 <div class="library-row">
                     <div class="lib-info">
                         <span class="lib-name">{{ lib.name }}</span>,
-                        <span class="lib-address">{{ lib.address }}</span>
+                        <span class="lib-address">{{ lib.city }}</span>
                     </div>
 
-                    <div class="lib-status" [class.status-available]="lib.available" [class.status-unavailable]="!lib.available">
-                        {{ lib.available ? 'Dostępna' : 'Niedostępne' }}
+                    <div class="lib-status" [class.status-available]="lib.is_available" [class.status-unavailable]="!lib.is_available">
+                        {{ lib.is_available ? 'Dostępna' : 'Niedostępne' }}
                     </div>
 
-                    <button class="reserve-btn" [class.btn-disabled]="!lib.available" [disabled]="!lib.available">
+                    <button class="reserve-btn" [class.btn-disabled]="!lib.is_available" [disabled]="!lib.is_available">
                         Zarezerwuj
                     </button>
                 </div>
