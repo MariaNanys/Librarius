@@ -11,7 +11,7 @@ export interface SearchBookPayload {
   date_to?: string;
   publisher?: string;
   // category_ids?: number[];
-  language_ids?: number[];
+  language_ids?: string[];
 }
 
 @Component({
@@ -42,7 +42,7 @@ export class AdvanceSearchComponent implements OnInit {
   // ==========================================
   authors = signal<{ id: number; name: string }[]>([]);
   categories = signal<{ id: number; name: string }[]>([]);
-  languages = signal<{ id: number; name: string }[]>([]);
+  languages = signal<{ code: string; display: string }[]>([]);
 
   // ==========================================
   // 3. STANY OTWARCIA MULTISELECTÓW
@@ -56,7 +56,7 @@ export class AdvanceSearchComponent implements OnInit {
   // ==========================================
   selectedAuthorIds = signal<number[]>([]);
   selectedCategoryIds = signal<number[]>([]);
-  selectedLanguageIds = signal<number[]>([]);
+  selectedLanguageIds = signal<string[]>([]);
 
   // ==========================================
   // 5. WYSZUKIWARKI W MULTISELECTACH
@@ -74,8 +74,8 @@ export class AdvanceSearchComponent implements OnInit {
   filteredCategories = computed(() => this.categories().filter(c => c.name.toLowerCase().includes(this.searchCategoryTerm().toLowerCase())));
   selectedCategoriesObjects = computed(() => this.categories().filter(c => this.selectedCategoryIds().includes(c.id)));
 
-  filteredLanguages = computed(() => this.languages().filter(l => l.name.toLowerCase().includes(this.searchLanguageTerm().toLowerCase())));
-  selectedLanguagesObjects = computed(() => this.languages().filter(l => this.selectedLanguageIds().includes(l.id)));
+  filteredLanguages = computed(() => this.languages().filter(l => l.display.toLowerCase().includes(this.searchLanguageTerm().toLowerCase())));
+  selectedLanguagesObjects = computed(() => this.languages().filter(l => this.selectedLanguageIds().includes(l.code)));
 
   // ==========================================
   // 7. POBIERANIE DANYCH Z BE
@@ -107,15 +107,15 @@ export class AdvanceSearchComponent implements OnInit {
     this.isCategoryOpen.set(false);
   }
 
-  toggleSelection(id: number, signalRef: any) {
-    signalRef.update((currentIds: number[]) => 
-      currentIds.includes(id) ? currentIds.filter((i: number) => i !== id) : [...currentIds, id]
+  toggleSelection(code: string | number, signalRef: any) {
+    signalRef.update((currentIds: (string | number)[]) => 
+      currentIds.includes(code) ? currentIds.filter((i: string | number) => i !== code) : [...currentIds, code]
     );
   }
 
-  removeSelection(id: number, event: Event, signalRef: any) {
+  removeSelection(code: string | number, event: Event, signalRef: any) {
     event.stopPropagation();
-    signalRef.update((currentIds: number[]) => currentIds.filter((i: number) => i !== id));
+    signalRef.update((currentIds: string[] | number[]) => currentIds.filter((i: string | number) => i !== code));
   }
 
   updateSearchTerm(event: Event, signalRef: any) {

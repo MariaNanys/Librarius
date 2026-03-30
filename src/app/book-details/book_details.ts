@@ -2,6 +2,7 @@ import { Component, inject, OnInit, ChangeDetectorRef } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router'; // Dodano Router
 import { Location } from '@angular/common'; // Dodano Location
 import { BookService } from '../services/book.service';
+import { forkJoin } from 'rxjs';
 
 @Component({
   selector: 'app-book-details',
@@ -20,6 +21,7 @@ export class BookDetailsComponent implements OnInit {
   // --- STAN KOMPONENTU ---
   bookId: string | null = null;
   bookDetails: any = null;
+  reservationDetails: any = null;
   isLoading = true;
   isExpanded = false;
 
@@ -56,9 +58,11 @@ export class BookDetailsComponent implements OnInit {
       this.bookDetails = null;
 
       if (this.bookId) {
-        this.bookService.getBookDetails(this.bookId).subscribe({
+        forkJoin([this.bookService.getBookDetails(this.bookId),this.bookService.getBookDetails(this.bookId)])
+        .subscribe({
           next: (data) => {
-            this.bookDetails = data;
+            this.bookDetails = data[0];
+            this.reservationDetails = data[1];
             this.isLoading = false;
             this.cdr.detectChanges(); // Wymuszamy przerysowanie widoku
           },

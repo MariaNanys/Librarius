@@ -25,9 +25,9 @@ export class HomeComponent implements OnInit {
   ];
 
   ngOnInit(): void {
-    this.bookService.getSpecificCovers().subscribe({
+    this.bookService.getBooks().subscribe({
       next: (books) => {
-        this.recentBooks = books.map(book => ({
+        this.recentBooks = books.items.map(book => ({
           ...book,
           cover_url: this.getBookCover(book.cover_url) 
         }));

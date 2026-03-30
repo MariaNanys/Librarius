@@ -23,7 +23,13 @@ export interface SearchBookResult {
   authors: { id: number; name: string }[];
   libraries: { id: number; name: string; city: string; region: number; is_available: boolean }[];
 }
-
+export interface Books {
+  items: any[];
+  page:number;
+  page_size:number;
+  total:number;
+  total_pages:number;
+}
 export interface BookCover {
   id: number;
   cover_url: string | null;
@@ -112,6 +118,10 @@ export class BookService {
         return mappedBooks;
       })
     );
+  }
+
+  getBooks(page: number = 0, limit: number = 12): Observable<Books> {
+    return this.#http.get<any>(`${environment.apiUrl}/books?page=${page}&page_size=${limit}`);
   }
 
   getBookDetails(id: string | number): Observable<any> {

@@ -18,8 +18,8 @@ export class SearchAdvanceService {
     return this.#http.get<{ id: number; name: string }[]>(`${environment.apiUrl}/categories`);
   }
 
-  getLanguages(): Observable<{ id: number; name: string }[]> {
-    return this.#http.get<{ id: number; name: string }[]>(`${environment.apiUrl}/languages`);
+  getLanguages(): Observable<{ code: string; display: string }[]> {
+    return this.#http.get<{ code: string; display: string }[]>(`${environment.apiUrl}/books/languages`);
   }
 
   // 2. Miejsce na przyszłą metodę wysyłającą cały formularz do BE

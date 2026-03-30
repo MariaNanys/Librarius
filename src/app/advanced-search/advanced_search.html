@@ -125,11 +125,11 @@
                     @if (selectedLanguagesObjects().length === 0) {
                     <span class="placeholder-text">Język</span>
                     }
-                    @for (lang of selectedLanguagesObjects(); track lang.id) {
+                    @for (lang of selectedLanguagesObjects(); track lang.code) {
                     <span class="chip">
-                        {{ lang.name }}
+                        {{ lang.display }}
                         <button type="button" class="chip-remove"
-                            (click)="removeSelection(lang.id, $event, selectedLanguageIds)">×</button>
+                            (click)="removeSelection(lang.code, $event, selectedLanguageIds)">×</button>
                     </span>
                     }
                 </div>
@@ -143,12 +143,12 @@
                         (input)="updateSearchTerm($event, searchLanguageTerm)" (click)="$event.stopPropagation()">
                 </div>
                 <div class="options-container">
-                    @for (lang of filteredLanguages(); track lang.id) {
+                    @for (lang of filteredLanguages(); track lang.code) {
                     <label class="dropdown-item" (click)="$event.stopPropagation()">
-                        <input type="checkbox" [checked]="selectedLanguageIds().includes(lang.id)"
-                            (change)="toggleSelection(lang.id, selectedLanguageIds)">
+                        <input type="checkbox" [checked]="selectedLanguageIds().includes(lang.code)"
+                            (change)="toggleSelection(lang.code, selectedLanguageIds)">
                         <span class="custom-cb"></span>
-                        <span class="label-text">{{ lang.name }}</span>
+                        <span class="label-text">{{ lang.display }}</span>
                     </label>
                     }
                     @if (filteredLanguages().length === 0) {
