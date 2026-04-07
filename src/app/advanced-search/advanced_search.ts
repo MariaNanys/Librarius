@@ -1,17 +1,18 @@
 import { Component, signal, computed, inject, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { SearchAdvanceService } from '../services/search-advance.service';
 import { AuthService } from '../services/auth.service';
+import { Router } from '@angular/router';
 
 // Interfejs określający strukturę danych wysyłanych do Backendu
 export interface SearchBookPayload {
   title?: string;
-  author_ids?: number[];
-  resource_number?: number | null;
-  date_from?: string;
-  date_to?: string;
+  author_id?: number[];
+  isbn?: number | null;
+  published_year_min?: string;
+  published_year_max?: string;
   publisher?: string;
   // category_ids?: number[];
-  language_ids?: string[];
+  language?: string[];
 }
 
 @Component({
@@ -25,6 +26,9 @@ export interface SearchBookPayload {
 export class AdvanceSearchComponent implements OnInit {
   private searchService = inject(SearchAdvanceService);
   private authService = inject(AuthService);
+  private searchAdvanceService = inject(SearchAdvanceService);
+
+  private router = inject(Router);
 
   isLoggedIn = computed(() => this.authService.currentUser() !== null);
 
@@ -128,26 +132,28 @@ export class AdvanceSearchComponent implements OnInit {
   onSubmit() {
     const payload: SearchBookPayload = {
       title: this.searchTitle(),
-      author_ids: this.selectedAuthorIds(),
-      resource_number: this.resourceNumber(),
-      date_from: this.dateFrom(),
-      date_to: this.dateTo(),
+      author_id: this.selectedAuthorIds(),
+      isbn: this.resourceNumber(),
+      published_year_min: this.dateFrom(),
+      published_year_max: this.dateTo(),
       publisher: this.publisher(),
       // category_ids: this.selectedCategoryIds(),
-      language_ids: this.selectedLanguageIds()
+      language: this.selectedLanguageIds()
     };
 
     // Usuwamy puste pola, żeby ładniej wyglądało w żądaniu do BE
     if (!payload.title) delete payload.title;
-    if (!payload.resource_number) delete payload.resource_number;
-    if (!payload.date_from) delete payload.date_from;
-    if (!payload.date_to) delete payload.date_to;
+    if (!payload.isbn) delete payload.isbn;
+    if (!payload.published_year_min) delete payload.published_year_min;
+    if (!payload.published_year_max) delete payload.published_year_max;
     if (!payload.publisher) delete payload.publisher;
-    if (payload.author_ids && payload.author_ids.length === 0) delete payload.author_ids;
+    if (payload.author_id && payload.author_id.length === 0) delete payload.author_id;
     // if (payload.category_ids && payload.category_ids.length === 0) delete payload.category_ids;
-    if (payload.language_ids && payload.language_ids.length === 0) delete payload.language_ids;
-
+    if (payload.language && payload.language.length === 0) delete payload.language;
+ this.router.navigate(['/search'], { queryParams: { ...payload, advanced: 'true' } });
     console.log('Gotowe do wysłania na BE:', payload);
-    
+     this.searchAdvanceService.searchAdvanced(payload).subscribe((result) => {
+      console.log(result);
+     })
   }
 }
