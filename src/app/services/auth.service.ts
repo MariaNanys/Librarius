@@ -55,4 +55,17 @@ export class AuthService {
     updateUser(userId: number, data: Partial<User>): Observable<any> {
     return this.#http.put(environment.apiUrl + '/users/'+userId, data);
     }
+
+    refreshUserFromProfile(profile: any) {
+        const current = this.currentUser();
+        if (current) {
+            this.currentUser.set({
+                ...current,
+                first_name: profile.first_name,
+                last_name: profile.last_name,
+                region: profile.region,
+                email: profile.email,
+            });
+        }
+    }
 }

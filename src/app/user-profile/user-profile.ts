@@ -58,13 +58,18 @@ export class UserProfileComponent {
       action: async () => {
         const data = this.editModel();
         const userId = this.user()?.sub;
-        if(userId){
-        this.authService.updateUser(userId, data).subscribe((result: any) => {
-          if(result) {
-          this.authService.logout();
-          this.isEditing.set(false);
-          }
-        });
+        if (userId) {
+          this.authService.updateUser(userId, data).subscribe({
+            next: (result: any) => {
+              if (result) {
+                this.authService.refreshUserFromProfile(result);
+                this.isEditing.set(false);
+              }
+            },
+            error: (err) => {
+              console.error('Błąd zmiany danych:', err);
+            }
+          });
         }
       }
     });
