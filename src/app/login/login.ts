@@ -21,7 +21,7 @@ export class LoginComponent {
   });
 
   loginForm = form(this.loginModel, (schemaPath) => {
-    required(schemaPath.login, { message: 'Login jest wymagany' });
+    required(schemaPath.login, { message: 'E-mail jest wymagany' });
     pattern(schemaPath.login, /^([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}|[0-9]+)$/, {
       message: 'Login musi być prawdziwym adresem e-mail'
     });
