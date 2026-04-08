@@ -47,7 +47,7 @@ export class RegistrationComponent {
         required(schemaPath.email, { message: 'E-mail jest wymagany' });
         email(schemaPath.email, { message: 'Niepoprawny email' });
         required(schemaPath.password, { message: 'Hasło jest wymagane' });
-        minLength(schemaPath.password, 8, { message: 'Hasło musi zawierać min 8 znaków' });
+        minLength(schemaPath.password, 12, { message: 'Hasło musi zawierać min 12 znaków' });
         pattern(
             schemaPath.password,
             /^(?=.*[a-z])(?=.*[A-Z])(?=.*[^A-Za-z0-9]).+$/,
