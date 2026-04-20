@@ -26,10 +26,10 @@ export interface SearchBookResult {
 
 export interface Books {
   items: any[];
-  page:number;
-  page_size:number;
-  total:number;
-  total_pages:number;
+  page: number;
+  page_size: number;
+  total: number;
+  total_pages: number;
 }
 
 export interface BookCover {
@@ -87,7 +87,7 @@ export class BookService {
     );
   }
 
- getSpecificCovers(): Observable<BookCover[]> {
+  getSpecificCovers(): Observable<BookCover[]> {
     if (this.recentBooksCache().length > 0) {
       return of(this.recentBooksCache());
     }
@@ -98,3 +98,27 @@ export class BookService {
       this.#http.get<any>(`${environment.apiUrl}/books/${id}`).pipe(
         catchError(() => of(null)) 
       )
+    );
+
+    return forkJoin(requests).pipe(
+      map(responses => {
+        const validResponses = responses.filter(res => res !== null);
+        const mappedBooks = validResponses.map(book => ({
+          id: book.id,
+          cover_url: book.cover_url
+        }));
+        
+        this.recentBooksCache.set(mappedBooks);
+        return mappedBooks;
+      })
+    );
+  }
+
+  getBooks(page: number = 0, limit: number = 12): Observable<Books> {
+    return this.#http.get<any>(`${environment.apiUrl}/books?page=${page}&page_size=${limit}`);
+  }
+
+  getBookDetails(id: string | number): Observable<any> {
+    return this.#http.get<any>(`${environment.apiUrl}/books/${id}`);
+  }
+}

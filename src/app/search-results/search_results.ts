@@ -1,5 +1,5 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
-import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { ActivatedRoute, RouterLink } from '@angular/router';
 import { BookService } from '../services/book.service';
 import { SearchAdvanceService } from '../services/search-advance.service'; 
 
@@ -12,7 +12,6 @@ import { SearchAdvanceService } from '../services/search-advance.service';
 })
 export class SearchResultsComponent implements OnInit {
   private route = inject(ActivatedRoute);
-  private router = inject(Router);
   public bookService = inject(BookService);
   private searchAdvanceService = inject(SearchAdvanceService); 
 
@@ -20,7 +19,6 @@ export class SearchResultsComponent implements OnInit {
 
   ngOnInit() {
     this.route.queryParams.subscribe(params => {
-      const currentPage = params['page'] ? Number(params['page']) : 1;
       
       if (params['advanced']) {
         const parts: string[] = [];
@@ -44,14 +42,8 @@ export class SearchResultsComponent implements OnInit {
             
             if (response && response.items && Array.isArray(response.items)) {
               safeResults = response.items;
-              this.bookService.currentPage.set(response.page || 1);
-              this.bookService.totalPages.set(response.total_pages || 1);
-              this.bookService.totalItems.set(response.total || 0);
             } else if (Array.isArray(response)) {
               safeResults = response;
-              this.bookService.currentPage.set(1);
-              this.bookService.totalPages.set(1);
-              this.bookService.totalItems.set(safeResults.length);
             }
 
             this.bookService.searchResults.set(safeResults); 
@@ -83,19 +75,9 @@ export class SearchResultsComponent implements OnInit {
       } else if (params['q']) {
         const q = params['q'];
         this.searchQuery.set(q);
-        this.bookService.searchBooksByString(q, currentPage).subscribe();
+        this.bookService.searchBooksByString(q).subscribe();
       }
     });
-  }
-
-  changePage(newPage: number) {
-    this.router.navigate([], {
-      relativeTo: this.route,
-      queryParams: { page: newPage },
-      queryParamsHandling: 'merge'
-    });
-    
-    window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
   getAuthorsList(authors: { id: number; name: string }[]): string {

@@ -33,35 +33,8 @@
                         </div>
                     </div>
                 }
+                
             </div>
-
-            @if (bookService.totalPages() > 1) {
-                <div class="pagination-container" style="display: flex; justify-content: center; align-items: center; gap: 15px; margin: 40px 0;">
-                    
-                    <button 
-                        type="button"
-                        (click)="changePage(bookService.currentPage() - 1)" 
-                        [disabled]="bookService.currentPage() === 1"
-                        [style.opacity]="bookService.currentPage() === 1 ? '0.5' : '1'"
-                        style="padding: 10px 20px; border-radius: 8px; border: 1px solid #ccc; background: #fff; cursor: pointer;">
-                        &laquo; Poprzednia
-                    </button>
-
-                    <span style="font-weight: bold; color: #4A3B28;">
-                        Strona {{ bookService.currentPage() }} z {{ bookService.totalPages() }}
-                    </span>
-
-                    <button 
-                        type="button"
-                        (click)="changePage(bookService.currentPage() + 1)" 
-                        [disabled]="bookService.currentPage() === bookService.totalPages()"
-                        [style.opacity]="bookService.currentPage() === bookService.totalPages() ? '0.5' : '1'"
-                        style="padding: 10px 20px; border-radius: 8px; border: 1px solid #ccc; background: #fff; cursor: pointer;">
-                        Następna &raquo;
-                    </button>
-
-                </div>
-            }
         }
     </div>
 </div>
