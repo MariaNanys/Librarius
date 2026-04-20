@@ -1,7 +1,6 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
-import { ActivatedRoute, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { BookService } from '../services/book.service';
-// NOWOŚĆ: Importujemy serwis od zaawansowanego wyszukiwania
 import { SearchAdvanceService } from '../services/search-advance.service'; 
 
 @Component({
@@ -13,18 +12,17 @@ import { SearchAdvanceService } from '../services/search-advance.service';
 })
 export class SearchResultsComponent implements OnInit {
   private route = inject(ActivatedRoute);
-  
+  private router = inject(Router);
   public bookService = inject(BookService);
-  // NOWOŚĆ: Wstrzykujemy serwis do komponentu
   private searchAdvanceService = inject(SearchAdvanceService); 
 
   searchQuery = signal<string>('');
 
-ngOnInit() {
+  ngOnInit() {
     this.route.queryParams.subscribe(params => {
+      const currentPage = params['page'] ? Number(params['page']) : 1;
       
       if (params['advanced']) {
-        // 1. Zbieramy filtry BEZ autora na czas ładowania
         const parts: string[] = [];
         
         if (params['title']) parts.push(`tytuł: "${params['title']}"`);
@@ -32,9 +30,8 @@ ngOnInit() {
         if (params['publisher']) parts.push(`wydawca: "${params['publisher']}"`);
         if (params['published_year_min']) parts.push(`od ${params['published_year_min']} r.`);
         if (params['published_year_max']) parts.push(`do ${params['published_year_max']} r.`);
-        if (params['language']) parts.push(`wybrany język`);
+        if (params['languages']) parts.push(`wybrany język`);
         
-        // Wyświetlamy to, co mamy do tej pory (bez migania brzydkim tekstem)
         this.searchQuery.set(parts.length > 0 ? `Zaawansowane (${parts.join(', ')})` : 'Kryteria zaawansowane');
         
         const payload = { ...params };
@@ -42,28 +39,42 @@ ngOnInit() {
 
         this.bookService.isSearchLoading.set(true);
         this.searchAdvanceService.searchAdvanced(payload).subscribe({
-          next: (results) => {
-            this.bookService.searchResults.set(results); 
+          next: (response: any) => {
+            let safeResults = [];
+            
+            if (response && response.items && Array.isArray(response.items)) {
+              safeResults = response.items;
+              this.bookService.currentPage.set(response.page || 1);
+              this.bookService.totalPages.set(response.total_pages || 1);
+              this.bookService.totalItems.set(response.total || 0);
+            } else if (Array.isArray(response)) {
+              safeResults = response;
+              this.bookService.currentPage.set(1);
+              this.bookService.totalPages.set(1);
+              this.bookService.totalItems.set(safeResults.length);
+            }
+
+            this.bookService.searchResults.set(safeResults); 
             this.bookService.isSearchLoading.set(false);
 
-            // 2. Mamy dane! Jeśli w wyszukiwaniu był autor, wyciągamy go z wyników
-            if (results.length > 0 && params['author_id']) {
-              const firstBook = results[0]; 
-              const searchedAuthor = firstBook.authors.find((a: any) => a.id == params['author_id']);
+            if (safeResults.length > 0 && params['author_ids']) {
+              const firstBook = safeResults[0]; 
+              
+              if (firstBook.authors && Array.isArray(firstBook.authors)) {
+                  const ids = params['author_ids'].split(',');
+                  const searchedAuthors = firstBook.authors.filter((a: any) => ids.includes(a.id.toString()));
 
-              if (searchedAuthor) {
-                // Kopiujemy nasze bazowe filtry
-                const finalParts = [...parts];
-                // Wrzucamy imię i nazwisko na sam początek listy (metoda unshift)
-                finalParts.unshift(`autor: "${searchedAuthor.name}"`);
-                
-                // Ustawiamy docelowy, piękny napis!
-                this.searchQuery.set(`Zaawansowane (${finalParts.join(', ')})`);
+                  if (searchedAuthors.length > 0) {
+                    const finalParts = [...parts];
+                    const names = searchedAuthors.map((a: any) => a.name).join(', ');
+                    finalParts.unshift(`autor: "${names}"`);
+                    this.searchQuery.set(`Zaawansowane (${finalParts.join(', ')})`);
+                  }
               }
             }
           },
           error: (err) => {
-            console.error('Błąd wyszukiwania zaawansowanego:', err);
+            console.error(err);
             this.bookService.searchResults.set([]);
             this.bookService.isSearchLoading.set(false);
           }
@@ -72,9 +83,19 @@ ngOnInit() {
       } else if (params['q']) {
         const q = params['q'];
         this.searchQuery.set(q);
-        this.bookService.searchBooksByString(q).subscribe();
+        this.bookService.searchBooksByString(q, currentPage).subscribe();
       }
     });
+  }
+
+  changePage(newPage: number) {
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: { page: newPage },
+      queryParamsHandling: 'merge'
+    });
+    
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
   getAuthorsList(authors: { id: number; name: string }[]): string {
