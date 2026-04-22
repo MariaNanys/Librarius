@@ -1,7 +1,7 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
-import { ActivatedRoute, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { BookService } from '../services/book.service';
-import { SearchAdvanceService } from '../services/search-advance.service'; 
+import { SearchAdvanceService } from '../services/search-advance.service';
 
 @Component({
   selector: 'app-search-results',
@@ -11,27 +11,41 @@ import { SearchAdvanceService } from '../services/search-advance.service';
   styleUrl: './search_results.scss'
 })
 export class SearchResultsComponent implements OnInit {
+
+  private router = inject(Router);
   private route = inject(ActivatedRoute);
   public bookService = inject(BookService);
-  private searchAdvanceService = inject(SearchAdvanceService); 
+  private searchAdvanceService = inject(SearchAdvanceService);
+
+  changePage(newPage: number) {
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: { page: newPage },
+      queryParamsHandling: 'merge'
+    });
+
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
 
   searchQuery = signal<string>('');
 
   ngOnInit() {
     this.route.queryParams.subscribe(params => {
-      
+const currentPage = params['page'] ? Number(params['page']) : 1;
+
       if (params['advanced']) {
         const parts: string[] = [];
-        
+
         if (params['title']) parts.push(`tytuł: "${params['title']}"`);
         if (params['isbn']) parts.push(`ISBN: ${params['isbn']}`);
         if (params['publisher']) parts.push(`wydawca: "${params['publisher']}"`);
         if (params['published_year_min']) parts.push(`od ${params['published_year_min']} r.`);
         if (params['published_year_max']) parts.push(`do ${params['published_year_max']} r.`);
         if (params['languages']) parts.push(`wybrany język`);
-        
+
         this.searchQuery.set(parts.length > 0 ? `Zaawansowane (${parts.join(', ')})` : 'Kryteria zaawansowane');
-        
+
         const payload = { ...params };
         delete payload['advanced'];
 
@@ -39,29 +53,29 @@ export class SearchResultsComponent implements OnInit {
         this.searchAdvanceService.searchAdvanced(payload).subscribe({
           next: (response: any) => {
             let safeResults = [];
-            
+
             if (response && response.items && Array.isArray(response.items)) {
               safeResults = response.items;
             } else if (Array.isArray(response)) {
               safeResults = response;
             }
 
-            this.bookService.searchResults.set(safeResults); 
+            this.bookService.searchResults.set(safeResults);
             this.bookService.isSearchLoading.set(false);
 
             if (safeResults.length > 0 && params['author_ids']) {
-              const firstBook = safeResults[0]; 
-              
-              if (firstBook.authors && Array.isArray(firstBook.authors)) {
-                  const ids = params['author_ids'].split(',');
-                  const searchedAuthors = firstBook.authors.filter((a: any) => ids.includes(a.id.toString()));
+              const firstBook = safeResults[0];
 
-                  if (searchedAuthors.length > 0) {
-                    const finalParts = [...parts];
-                    const names = searchedAuthors.map((a: any) => a.name).join(', ');
-                    finalParts.unshift(`autor: "${names}"`);
-                    this.searchQuery.set(`Zaawansowane (${finalParts.join(', ')})`);
-                  }
+              if (firstBook.authors && Array.isArray(firstBook.authors)) {
+                const ids = params['author_ids'].split(',');
+                const searchedAuthors = firstBook.authors.filter((a: any) => ids.includes(a.id.toString()));
+
+                if (searchedAuthors.length > 0) {
+                  const finalParts = [...parts];
+                  const names = searchedAuthors.map((a: any) => a.name).join(', ');
+                  finalParts.unshift(`autor: "${names}"`);
+                  this.searchQuery.set(`Zaawansowane (${finalParts.join(', ')})`);
+                }
               }
             }
           },
@@ -76,6 +90,7 @@ export class SearchResultsComponent implements OnInit {
         const q = params['q'];
         this.searchQuery.set(q);
         this.bookService.searchBooksByString(q).subscribe();
+        this.bookService.searchBooksByString(q, currentPage).subscribe();
       }
     });
   }

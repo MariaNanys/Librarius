@@ -41,6 +41,8 @@ export interface BookCover {
   providedIn: 'root'
 })
 export class BookService {
+
+  
   #http = inject(HttpClient);
 
   searchResults = signal<SearchBookResult[]>([]);
@@ -51,41 +53,24 @@ export class BookService {
   totalPages = signal<number>(1);
   totalItems = signal<number>(0);
 
-  searchBooksByString(searchTerm: string, page: number = 1): Observable<any> {
-    this.isSearchLoading.set(true);
+searchBooksByString(searchTerm: string, page: number = 1): Observable<any> {
+  this.isSearchLoading.set(true);
 
-    const params = new HttpParams()
-      .set('q', searchTerm)
-      .set('page', page.toString());
+  const params = new HttpParams()
+    .set('q', searchTerm)
+    .set('page', page.toString()); 
 
-    return this.#http.get<any>(`${environment.apiUrl}/search/books`, { params }).pipe(
-      tap({
-        next: (response) => {
-          let safeResults: SearchBookResult[] = [];
-          
-          if (response && response.items && Array.isArray(response.items)) {
-            safeResults = response.items;
-            this.currentPage.set(response.page || 1);
-            this.totalPages.set(response.total_pages || 1);
-            this.totalItems.set(response.total || 0);
-          } else if (Array.isArray(response)) {
-            safeResults = response;
-            this.currentPage.set(1);
-            this.totalPages.set(1);
-            this.totalItems.set(safeResults.length);
-          }
-
-          this.searchResults.set(safeResults);
-          this.isSearchLoading.set(false);
-        },
-        error: (err) => {
-          console.error(err);
-          this.searchResults.set([]);
-          this.isSearchLoading.set(false);
-        }
-      })
-    );
-  }
+  return this.#http.get<any>(`${environment.apiUrl}/search/books`, { params }).pipe(
+    tap(response => {
+      if (response && response.items) {
+        this.searchResults.set(response.items);
+        this.currentPage.set(response.page);
+        this.totalPages.set(response.total_pages);
+      }
+      this.isSearchLoading.set(false);
+    })
+  );
+}
 
   getSpecificCovers(): Observable<BookCover[]> {
     if (this.recentBooksCache().length > 0) {
