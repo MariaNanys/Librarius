@@ -205,3 +205,27 @@ $border-light: #f4f4f4;
     }
   }
 }
+.page-input {
+  width: 50px;
+  padding: 4px 8px;
+  border: 2px solid #4A3B28;
+  border-radius: 6px;
+  background: #fff;
+  color: #4A3B28;
+  font-weight: bold;
+  text-align: center;
+  font-size: 1rem;
+  outline: none;
+  
+  &::-webkit-inner-spin-button,
+  &::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+}
+strong {
+  transition: background 0.2s;
+  &:hover {
+    background: #e0d7c6 !important;
+  }
+}

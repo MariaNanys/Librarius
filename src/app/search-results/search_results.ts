@@ -26,13 +26,29 @@ export class SearchResultsComponent implements OnInit {
 
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
+  isEditingPage = signal<boolean>(false);
 
+  handlePageInput(event: Event) {
+    const input = event.target as HTMLInputElement;
+    const newPage = Number(input.value);
+    const maxPages = this.bookService.totalPages();
+
+    if (newPage > 0 && newPage <= maxPages) {
+      this.changePage(newPage);
+    }
+
+    this.isEditingPage.set(false);
+  }
+
+  toggleEditPage() {
+    this.isEditingPage.set(true);
+  }
 
   searchQuery = signal<string>('');
 
   ngOnInit() {
     this.route.queryParams.subscribe(params => {
-const currentPage = params['page'] ? Number(params['page']) : 1;
+      const currentPage = params['page'] ? Number(params['page']) : 1;
 
       if (params['advanced']) {
         const parts: string[] = [];

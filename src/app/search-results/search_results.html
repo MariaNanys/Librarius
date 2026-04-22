@@ -43,7 +43,17 @@
             </button>
 
             <div class="page-counter">
-                Strona <strong>{{ bookService.currentPage() }}</strong> z <span>{{ bookService.totalPages() }}</span>
+                Strona
+                @if (!isEditingPage()) {
+                <strong (click)="toggleEditPage()" style="cursor: pointer;" title="Kliknij, aby wpisać numer strony">
+                    {{ bookService.currentPage() }}
+                </strong>
+                } @else {
+                <input type="number" [value]="bookService.currentPage()" (keydown.enter)="handlePageInput($event)"
+                    (blur)="isEditingPage.set(false)" class="page-input" autoFocus [max]="bookService.totalPages()"
+                    min="1">
+                }
+                z <span>{{ bookService.totalPages() }}</span>
             </div>
 
             <button class="pagination-btn" (click)="changePage(bookService.currentPage() + 1)"
