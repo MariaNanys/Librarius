@@ -1,22 +1,30 @@
 import { HttpInterceptorFn } from '@angular/common/http';
+import { inject } from '@angular/core';
+import { AuthService } from '../services/auth.service';
+import { EMPTY } from 'rxjs';
 
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
-  // 1. Wyciągamy token z pamięci przeglądarki
+  const authService = inject(AuthService);
   const token = localStorage.getItem('token');
 
-  // 2. Jeśli token istnieje (użytkownik jest zalogowany)
   if (token) {
-    // Klonujemy oryginalne zapytanie i dodajemy nagłówek "Authorization: Bearer <token>"
+
     const clonedRequest = req.clone({
       setHeaders: {
         Authorization: `Bearer ${token}`
       }
     });
-    
-    // Puszczamy zmodyfikowane zapytanie dalej
+
     return next(clonedRequest);
   }
+  const loginTime = localStorage.getItem('login_timestamp');
+  const oneDayInMs = 24 * 60 * 60 * 1000;
 
-  // 3. Jeśli nie ma tokena (np. przed zalogowaniem), puszczamy zapytanie bez zmian
+  if (loginTime) {
+    const now = new Date().getTime();
+    if (now - Number(loginTime) > oneDayInMs) {
+      authService.logout();
+      return EMPTY;
+  }}
   return next(req);
 };
