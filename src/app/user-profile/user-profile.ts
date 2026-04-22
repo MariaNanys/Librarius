@@ -61,7 +61,8 @@ export class UserProfileComponent {
         if(userId){
         this.authService.updateUser(userId, data).subscribe((result: any) => {
           if(result) {
-          this.authService.logout();
+        localStorage.setItem('token', result.token);
+          this.authService.refreshUserFromProfile(result.user);
           this.isEditing.set(false);
           }
         });

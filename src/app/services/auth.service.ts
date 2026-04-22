@@ -27,7 +27,18 @@ export class AuthService {
   }
   currentUser = signal<User | null>(this.#getUserFromStorage());
   router: any;
-
+refreshUserFromProfile(profile: any) {
+        const current = this.currentUser();
+        if (current) {
+            this.currentUser.set({
+                ...current,
+                first_name: profile.first_name,
+                last_name: profile.last_name,
+                region: profile.region,
+                email: profile.email,
+            });
+        }
+    }
   #getUserFromStorage(): User | null {
     const token = localStorage.getItem('token');
     return token ? jwtDecode(token) : null;
