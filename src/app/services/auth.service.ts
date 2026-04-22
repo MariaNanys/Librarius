@@ -38,14 +38,14 @@ export class AuthService {
   }
 
   logout() {
-    localStorage.clear();
     this.currentUser.set(null);
-    this.#http.post(`${environment.apiUrl}/auth/logout`, {}).pipe(
+    this.#http.post(`${environment.apiUrl}/auth/logout`, {token: localStorage.getItem('token')}).pipe(
       catchError(() => {
         return of(null);
       }),
       finalize(() => {
         this.router.navigate(['/auth/login']);
+        localStorage.clear();
       })
     ).subscribe();
   }
