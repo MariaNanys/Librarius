@@ -5,6 +5,7 @@ import { EMPTY } from 'rxjs';
 
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
   const authService = inject(AuthService);
+  authService.checkSessionTimeout();
   const token = localStorage.getItem('token');
 
   if (token) {
