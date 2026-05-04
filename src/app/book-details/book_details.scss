@@ -1,8 +1,7 @@
-/* Zmienne kolorystyczne z Twojego projektu (dostosuj jeśli masz inne w zmiennych globalnych) */
 $primary-text: #333;
 $secondary-text: #888;
-$olive-green: #a3ab85; /* Kolor przycisku 'Zarezerwuj' i tekstu 'Dostępna' */
-$grey-disabled: #a9a9a9; /* Kolor niedostępnego przycisku */
+$olive-green: #a3ab85;
+$grey-disabled: #a9a9a9;
 $bg-color: #ffffff;
 
 .search-section {
@@ -41,12 +40,11 @@ $bg-color: #ffffff;
   margin-top: 30px;
   display: flex;
   flex-direction: column;
-  gap: 30px; /* Zapewnia ładny odstęp między kartą a bibliotekami */
+  gap: 30px;
 }
-/* --- KARTA KSIĄŻKI --- */
 .book-details-card {
   background: $bg-color;
-  border-radius: 0px 20px 20px 0; /* Zgodnie z projektem prawy dolny róg i górne są zaokrąglone */
+  border-radius: 0px 20px 20px 0;
   padding: 30px;
   padding-left: 60px;
   margin: 30px 0;
@@ -77,7 +75,6 @@ $bg-color: #ffffff;
   display: flex;
   gap: 40px;
 
-  /* RWD: Na małych ekranach okładka i tekst układają się w kolumnę */
   @media (max-width: 768px) {
     flex-direction: column;
   }
@@ -112,7 +109,7 @@ $bg-color: #ffffff;
       .label {
         font-weight: 700;
         display: inline-block;
-        width: 120px; /* Wyrównanie etykiet do jednej linii */
+        width: 120px;
       }
     }
   }
@@ -132,21 +129,17 @@ $bg-color: #ffffff;
       font-size: 14px;
       margin-top: 10px;
       
-      /* Obcinanie do 3 linijek */
       display: -webkit-box;
       -webkit-line-clamp: 3;
       -webkit-box-orient: vertical;
       overflow: hidden;
-      
-      /* Dodajemy płynną animację rozciągania */
-      max-height: 80px; /* Wysokość dla 3 linijek (14px * 1.8 * 3 ≈ 75px + mały zapas) */
+      max-height: 80px;
       transition: max-height 0.4s ease-in-out;
     }
 
-    /* KLASA AKTYWNA - przypinana z TypeScriptu po kliknięciu */
     .description-text.expanded {
-      -webkit-line-clamp: unset; /* Wyłączamy obcinanie linijek */
-      max-height: 1000px; /* Bardzo duża wartość, by pomieścić cały tekst - pozwala na płynną animację CSS */
+      -webkit-line-clamp: unset;
+      max-height: 1000px;
     }
 
     .read-more-container {
@@ -166,8 +159,6 @@ $bg-color: #ffffff;
     }
   }
 }
-
-/* --- LISTA BIBLIOTEK --- */
 .availability-section {
   display: flex;
   flex-direction: column;
@@ -180,7 +171,7 @@ $bg-color: #ffffff;
   align-items: center;
   justify-content: space-between;
   background: $bg-color;
-  border-radius: 30px; /* Kształt pigułki */
+  border-radius: 30px;
   padding: 15px 30px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.02);
 
@@ -215,7 +206,7 @@ $bg-color: #ffffff;
     color: $olive-green;
   }
   &.status-unavailable {
-    color: #d3a1a1; /* Delikatny wyblakły czerwonawy/szary */
+    color: #d3a1a1;
   }
 }
 
@@ -240,15 +231,13 @@ $bg-color: #ffffff;
   }
 }
 
-/* --- PRZYCISK POWROTU --- */
 .back-button-container {
-  /* Margines odciąga przycisk od białej karty książki */
   margin-bottom: -15px; 
   
   .back-btn {
     background: transparent;
     border: none;
-    color: #888; /* Szary, dyskretny kolor bazowy */
+    color: #888;
     font-size: 15px;
     font-weight: 500;
     cursor: pointer;
@@ -259,7 +248,7 @@ $bg-color: #ffffff;
     transition: color 0.3s;
 
     &:hover {
-      color: #4A3B28; /* Głęboki brąz z Twojej palety po najechaniu */
+      color: #4A3B28;
       text-decoration: underline;
     }
   }

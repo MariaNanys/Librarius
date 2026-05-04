@@ -19,7 +19,6 @@ export class RegistrationComponent {
         password: '',
         repeatPassword: ''
     });
-    // loginForm = form(this.loginModel);
     regions = [
     { id: 1, name: 'Dolnośląskie' },
     { id: 2, name: 'Kujawsko-Pomorskie' },
@@ -81,23 +80,16 @@ export class RegistrationComponent {
     event.preventDefault();
     submit(this.registrationForm, {
         action: async () => {
-            // 1. Pobieramy dane z formularza
             const formValues = this.registrationModel();
-
-            // 2. Skoro użyłeś tablicy obiektów, formValues.region ma już w sobie ID (np. "7")
-            // Zwykły atrybut HTML value zawsze jest tekstem, więc zamieniamy go na liczbę:
             const regionId = Number(formValues.region);
-
-            // 3. Budujemy finalny obiekt DOKŁADNIE w takim formacie, jakiego oczekuje BE
             const payloadToSend = {
                 email: formValues.email,
                 password: formValues.password,
                 first_name: formValues.first_name,
                 last_name: formValues.last_name,
-                region: regionId // <-- Tu wskakuje czysta liczba np. 7
+                region: regionId
             };
 
-            // 4. Wysyłamy do serwera
             this.authService.register(payloadToSend).subscribe({
                 next: (result) => {
                     console.log('Sukces');

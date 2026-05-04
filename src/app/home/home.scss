@@ -39,29 +39,25 @@
   margin-top: 20px;
 }
 
-/* Karta książki jest teraz linkiem <a> */
 .book-card {
   flex: 0 0 calc(25% - 15px);
   display: flex;
-  justify-content: center; /* Wyśrodkowuje okładkę w kolumnie */
-  align-items: flex-start; /* Sprawia, że okładki trzymają się góry */
+  justify-content: center;
+  align-items: flex-start;
   cursor: pointer;
-  
-  /* USUWAmy background, box-shadow i border-radius stąd! */
 }
 
 .book-card img {
   width: 100%;
-  max-width: 200px; /* Tu możesz ograniczyć ich maksymalną szerokość */
-  height: auto; /* Zachowuje naturalne proporcje */
+  max-width: 200px;
+  height: auto;
   display: block;
-  
-  /* DODAJEMY cień i rogi tutaj: */
+
   border-radius: 8px;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
   transition: transform 0.3s ease-in-out;
 }
 
 .book-card:hover img {
-  transform: scale(1.05); /* Powiększenie samej okładki na hover */
+  transform: scale(1.05);
 }

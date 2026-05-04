@@ -65,24 +65,38 @@
             </div>
         </div>
 
-        <div class="availability-section">
-            @for (lib of libraries; track lib.name) {
-                <div class="library-row">
-                    <div class="lib-info">
-                        <span class="lib-name">{{ lib.name }}</span>,
-                        <span class="lib-address">{{ lib.city }}</span>
-                    </div>
-
-                    <div class="lib-status" [class.status-available]="lib.is_available" [class.status-unavailable]="!lib.is_available">
-                        {{ lib.is_available ? 'Dostępna' : 'Niedostępne' }}
-                    </div>
-
-                    <button class="reserve-btn" [class.btn-disabled]="!lib.is_available" [disabled]="!lib.is_available">
-                        Zarezerwuj
-                    </button>
+       <div class="availability-section">
+    @if (libraries && libraries.length > 0) {
+        @for (lib of libraries; track lib.id) {
+            <div class="library-row">
+                <div class="lib-info">
+                    <span class="lib-name">{{ lib.name }}</span>,
+                    <span class="lib-address">{{ lib.city }}</span>
                 </div>
-            }
-        </div>
+
+                <div class="lib-status" [class.status-available]="lib.is_available" [class.status-unavailable]="!lib.is_available">
+                    {{ lib.is_available ? 'Dostępna' : 'Niedostępne' }}
+                </div>
+                
+                <button 
+                    class="reserve-btn" 
+                    [class.btn-disabled]="!lib.is_available && isLoggedIn"
+                    [class.btn-login-required]="!isLoggedIn"
+                    [disabled]="!lib.is_available && isLoggedIn"
+                    [routerLink]="redirectLink()"
+                >
+                    @if (isLoggedIn) {
+                        Zarezerwuj
+                    } @else {
+                        Zaloguj się, aby zarezerwować
+                    }
+                </button>
+            </div>
+        }
+    } @else {
+        <p class="no-libraries">Ta książka nie jest obecnie przypisana do żadnej biblioteki.</p>
+    }
+</div>
 
     </div>
 } @else {

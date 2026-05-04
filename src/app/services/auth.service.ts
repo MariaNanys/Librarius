@@ -1,9 +1,10 @@
 import { HttpClient } from "@angular/common/http";
 import { inject, Injectable, signal } from "@angular/core";
 import { environment } from "../../../environments/environment";
-import { Observable, of } from "rxjs";
+import { Observable } from "rxjs";
 import { jwtDecode } from "jwt-decode";
-import { catchError, finalize, tap } from 'rxjs/operators';
+import { tap } from 'rxjs/operators';
+import { Router } from "@angular/router";
 
 export interface User {
   sub: number;
@@ -18,27 +19,27 @@ export interface User {
 })
 export class AuthService {
   #http: HttpClient = inject(HttpClient);
+  private router = inject(Router);
 
   constructor() {
     this.checkSessionTimeout();
     setInterval(() => {
-    this.checkSessionTimeout();
-  }, 60000)
+      this.checkSessionTimeout();
+    }, 60000)
   }
   currentUser = signal<User | null>(this.#getUserFromStorage());
-  router: any;
-refreshUserFromProfile(profile: any) {
-        const current = this.currentUser();
-        if (current) {
-            this.currentUser.set({
-                ...current,
-                first_name: profile.first_name,
-                last_name: profile.last_name,
-                region: profile.region,
-                email: profile.email,
-            });
-        }
+  refreshUserFromProfile(profile: any) {
+    const current = this.currentUser();
+    if (current) {
+      this.currentUser.set({
+        ...current,
+        first_name: profile.first_name,
+        last_name: profile.last_name,
+        region: profile.region,
+        email: profile.email,
+      });
     }
+  }
   #getUserFromStorage(): User | null {
     const token = localStorage.getItem('token');
     return token ? jwtDecode(token) : null;
@@ -47,22 +48,19 @@ refreshUserFromProfile(profile: any) {
   setUserToStorage(token: string) {
     this.currentUser.set(jwtDecode(token));
   }
-
-  logout() {
-    this.currentUser.set(null);
-    this.#http.post(`${environment.apiUrl}/auth/logout`, {token: localStorage.getItem('token')}).pipe(
-      catchError(() => {
-        return of(null);
-      }),
-      finalize(() => {
-        this.router.navigate(['/auth/login']);
-        localStorage.clear();
-      })
-    ).subscribe();
+  isLoggedIn(): boolean {
+    return !!this.currentUser();
   }
-
-  logoutBackend(): Observable<any> {
-    return this.#http.post(environment.apiUrl + '/auth/logout', { token: localStorage.getItem('token') });
+  logout() {
+    const token = localStorage.getItem('token');
+    this.currentUser.set(null);
+    if (token) {
+      this.#http.post(`${environment.apiUrl}/auth/logout`, { token }).subscribe(()=> {
+        this.router.navigate(['/login']);
+        localStorage.removeItem('token');
+        localStorage.removeItem('login_timestamp');
+      });
+    } 
   }
 
   register(data: any): Observable<any> {
@@ -75,7 +73,6 @@ refreshUserFromProfile(profile: any) {
         const now = new Date().getTime();
         localStorage.setItem('token', response.token);
         localStorage.setItem('login_timestamp', now.toString());
-
         this.currentUser.set(response.user);
       })
     );
@@ -91,7 +88,7 @@ refreshUserFromProfile(profile: any) {
 
   public checkSessionTimeout() {
     const loginTime = localStorage.getItem('login_timestamp');
-    if (!loginTime) return;
+    if (loginTime == null) return;
 
     const now = new Date().getTime();
     const oneDayInMs = 24 * 60 * 60 * 1000;

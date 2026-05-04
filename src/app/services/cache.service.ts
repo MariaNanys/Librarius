@@ -4,10 +4,8 @@ import { Injectable, signal } from "@angular/core";
     providedIn: 'root'
 })
 export class CacheService {
-  // 1. NASZ NOWY SYGNAŁ DO TRZYMANIA STANU UŻYTKOWNIKA
   user = signal<{ first_name: string } | null>(null);
 
-  // --- Twoja dotychczasowa logika cachowania ---
   private cacheMap = new Map<string, { data: any; expiry: number }>();
   private readonly DEFAULT_TTL = 30 * 60 * 1000; 
 
@@ -31,7 +29,6 @@ export class CacheService {
       this.cacheMap.delete(cacheKey);
     } else {
       this.cacheMap.clear();
-      // Przy pełnym czyszczeniu (np. wylogowaniu) resetujemy też użytkownika
       this.user.set(null); 
     }
   }
