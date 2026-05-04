@@ -34,7 +34,6 @@
             </div>
             }
         </div>
-
         @if (bookService.totalPages() > 1) {
         <div class="pagination-wrapper">
             <button class="pagination-btn" (click)="changePage(bookService.currentPage() - 1)"

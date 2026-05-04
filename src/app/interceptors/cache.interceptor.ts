@@ -12,8 +12,6 @@ export const cacheInterceptor: HttpInterceptorFn = (req: HttpRequest<any>, next:
   const cacheKey = req.urlWithParams; 
 
   if (req.headers.has('X-Skip-Cache')) {
-    console.log('🔄 Wymuszono odświeżenie danych. Omijam cache dla:', cacheKey);
-
     const newReq = req.clone({ headers: req.headers.delete('X-Skip-Cache') });
     
     return next(newReq).pipe(
@@ -28,14 +26,12 @@ export const cacheInterceptor: HttpInterceptorFn = (req: HttpRequest<any>, next:
   const cachedData = cacheService.get(cacheKey);
 
   if (cachedData) {
-    console.log('✅ Zwracam dane bezpośrednio z CacheService:', cacheKey);
     return of(new HttpResponse({ body: cachedData, status: 200 }));
   }
 
   return next(req).pipe(
     tap(event => {
       if (event instanceof HttpResponse) {
-        console.log('⬇️ Pobrano z API i zapisano do CacheService:', cacheKey);
         cacheService.set(cacheKey, event.body);
       }
     })

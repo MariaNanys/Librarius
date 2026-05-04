@@ -92,7 +92,6 @@ export class RegistrationComponent {
 
             this.authService.register(payloadToSend).subscribe({
                 next: (result) => {
-                    console.log('Sukces');
                     this.formSubmitted.set(true);
                 },
                 error: (err) => {

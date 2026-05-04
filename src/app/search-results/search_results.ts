@@ -36,7 +36,6 @@ export class SearchResultsComponent implements OnInit {
     if (newPage > 0 && newPage <= maxPages) {
       this.changePage(newPage);
     }
-
     this.isEditingPage.set(false);
   }
 
@@ -47,6 +46,7 @@ export class SearchResultsComponent implements OnInit {
   searchQuery = signal<string>('');
 
   ngOnInit() {
+    // this.bookService.currentPage.set(1);
     this.route.queryParams.subscribe(params => {
       const currentPage = params['page'] ? Number(params['page']) : 1;
 
@@ -105,7 +105,6 @@ export class SearchResultsComponent implements OnInit {
       } else if (params['q']) {
         const q = params['q'];
         this.searchQuery.set(q);
-        this.bookService.searchBooksByString(q).subscribe();
         this.bookService.searchBooksByString(q, currentPage).subscribe();
       }
     });
