@@ -1,115 +1,167 @@
-import { Component, inject, OnInit, ChangeDetectorRef } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router'; // Dodano Router
-import { Location } from '@angular/common'; // Dodano Location
+import { Component, inject, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
+import { Location } from '@angular/common';
 import { BookService } from '../services/book.service';
-import { forkJoin, of } from 'rxjs';
-import { SearchAdvanceService } from '../services/search-advance.service';
-import { catchError } from 'rxjs/operators';
+import { AuthService } from '../services/auth.service';
+import { ReservationService } from '../services/reservation.service';
 
 @Component({
   selector: 'app-book-details',
   templateUrl: './book_details.html',
   styleUrl: './book_details.scss',
-  standalone: true
+  standalone: true,
+  imports: []
 })
-export class BookDetailsComponent implements OnInit {
-  // --- WSTRZYKIWANIE ZALEŻNOŚCI ---
+export class BookDetailsComponent implements OnInit, OnDestroy {
   private route = inject(ActivatedRoute);
-  private router = inject(Router); // Potrzebne do przekierowania po wpisaniu nowej frazy
-  private location = inject(Location); // Potrzebne do przycisku "Wstecz"
+  private router = inject(Router);
+  private location = inject(Location);
   private bookService = inject(BookService);
-  private searchAdvanceService = inject(SearchAdvanceService);
+  private authService = inject(AuthService);
+  private reservationService = inject(ReservationService);
   private cdr = inject(ChangeDetectorRef);
 
-  // --- STAN KOMPONENTU ---
   bookId: string | null = null;
   bookDetails: any = null;
   libraries: any = null;
   isLoading = true;
   isExpanded = false;
 
-  readonly fallbackDescription = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.';
+  popupOpen = false;
+  selectedLibraryId: number | null = null;
+  isSaving = false;
+  saveError = '';
+  successPopupOpen = false;
 
-  
+  private redirectTimeoutHandle: number | null = null;
 
-  // --- GETTERY I OBSŁUGA OPISU ---
+  readonly fallbackDescription = 'Lorem ipsum dolor sit amet...';
+
   get displayDescription(): string {
     return this.bookDetails?.description || this.fallbackDescription;
   }
 
-// Sprawdzamy, czy faktycznie wyświetlany opis (displayDescription) jest długi
+  get isLoggedIn(): boolean {
+    return !!this.authService.currentUser();
+  }
+
   get isLongDescription(): boolean {
-    return this.displayDescription.length > 200; 
+    return this.displayDescription.length > 200;
   }
 
-  toggleDescription(event: Event): void {
-    event.preventDefault(); 
-    this.isExpanded = !this.isExpanded;
+  get selectedLibrary(): any {
+    if (this.selectedLibraryId === null || !this.libraries) return null;
+    return this.libraries.find((l: any) => l.id === this.selectedLibraryId) ?? null;
   }
 
-  // --- CYKL ŻYCIA KOMPONENTU (POBIERANIE DANYCH) ---
   ngOnInit(): void {
     this.route.paramMap.subscribe(params => {
       this.bookId = params.get('id');
-      
-      // Resetujemy stan przy każdym załadowaniu nowego ID
       this.isLoading = true;
-      this.bookDetails = null;
 
-     if (this.bookId) {
-        forkJoin([
-          // 1. Zapytanie o szczegóły książki (główne, musi się udać)
-          this.bookService.getBookDetails(this.bookId),
-          
-          // 2. Zapytanie o biblioteki (łapiemy błąd 401 i zwracamy null)
-          this.searchAdvanceService.searchAdvanced({id: this.bookId}).pipe(
-            catchError((err) => {
-              console.warn('Nie udało się pobrać bibliotek (np. brak autoryzacji), zwracam pusty stan.');
-              return of(null); // <--- Zwracamy sztuczną, pustą odpowiedź
-            })
-          )
-        ])
-        .subscribe({
-          next: (data) => {
-            this.bookDetails = data[0]; 
-            const libraryData = data[1];
-            if (libraryData && libraryData.length > 0) {
-              this.libraries = libraryData[0].libraries;
-            } else {
-              this.libraries = [];
+      if (this.bookId) {
+        this.bookService.getBookDetails(this.bookId)
+          .subscribe({
+            next: (data) => {
+              this.bookDetails = data;
+              this.libraries = data?.libraries || [];
+              this.isLoading = false;
+              this.cdr.detectChanges();
+            },
+            error: (err) => {
+              console.error('Błąd:', err);
+              this.isLoading = false;
+              this.cdr.detectChanges();
             }
-            
-            this.isLoading = false;
-            this.cdr.detectChanges();
-          },
-          error: (err) => {
-            console.error('Błąd pobierania głównych szczegółów książki:', err);
-            this.isLoading = false;
-            this.cdr.detectChanges();
-          }
-        });
+          });
       }
-    })
+    });
   }
-      
+
+  ngOnDestroy(): void {
+    if (this.redirectTimeoutHandle !== null) {
+      clearTimeout(this.redirectTimeoutHandle);
+    }
+  }
+
+  handleReservation(libraryId: number): void {
+    if (this.isLoggedIn) {
+      this.openPopup(libraryId);
+    } else {
+      this.router.navigate(['/login']);
+    }
+  }
+
+  toggleDescription(event: Event): void {
+    event.preventDefault();
+    this.isExpanded = !this.isExpanded;
+  }
 
   getCover(url: string | null | undefined): string {
-    return url ? url : '/assets/book_1.webp'; 
+    return url ? url : '/assets/book_1.webp';
   }
 
-  // --- NOWE METODY: NAWIGACJA I WYSZUKIWANIE ---
-
-  // Metoda wywoływana przez przycisk powrotu
   goBack(): void {
     this.location.back();
   }
 
-  // Metoda wywoływana z inputa (po Enter lub kliknięciu w lupę)
   onSearch(searchTerm: string): void {
     const query = searchTerm.trim();
     if (query) {
-      console.log('Nowe wyszukiwanie z detali książki:', query);
       this.router.navigate(['/search'], { queryParams: { q: query } });
     }
+  }
+
+  openPopup(libraryId: number): void {
+    this.selectedLibraryId = libraryId;
+    this.saveError = '';
+    this.popupOpen = true;
+  }
+
+  closePopup(): void {
+    this.popupOpen = false;
+    this.selectedLibraryId = null;
+    this.isSaving = false;
+    this.saveError = '';
+  }
+
+  onLibraryChange(value: string): void {
+    this.selectedLibraryId = value ? Number(value) : null;
+  }
+
+  confirmReservation(): void {
+    const lib = this.selectedLibrary;
+    const libId = this.selectedLibraryId;
+    if (!this.bookDetails || libId === null || !lib?.is_available) {
+      return;
+    }
+    this.isSaving = true;
+    this.saveError = '';
+    this.reservationService.create(this.bookDetails.id, libId).subscribe({
+      next: () => {
+        this.closePopup();
+        this.successPopupOpen = true;
+        this.cdr.detectChanges();
+        this.scheduleSuccessRedirect();
+      },
+      error: (err) => {
+        console.error('Błąd rezerwacji:', err);
+        this.saveError = err?.error?.detail || 'Nie udało się utworzyć rezerwacji.';
+        this.isSaving = false;
+        this.cdr.detectChanges();
+      }
+    });
+  }
+
+  private scheduleSuccessRedirect(): void {
+    if (this.redirectTimeoutHandle !== null) {
+      clearTimeout(this.redirectTimeoutHandle);
+    }
+    this.redirectTimeoutHandle = window.setTimeout(() => {
+      this.successPopupOpen = false;
+      this.redirectTimeoutHandle = null;
+      this.cdr.detectChanges();
+      this.router.navigate(['/reservations']);
+    }, 2000);
   }
 }

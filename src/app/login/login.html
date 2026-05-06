@@ -1,7 +1,7 @@
 <form (submit)="onSubmit($event)" class="form-login">
   <h2>Logowanie</h2>
   <label>
-    <input type="text" [formField]="loginForm.login" placeholder="e-mail / identyfikatora" />
+    <input type="text" [formField]="loginForm.login" placeholder="e-mail" />
     @if (loginForm.login().touched() && loginForm.login().errors(); as errors) {
       <div class="error">
         @for (error of errors; track error) {

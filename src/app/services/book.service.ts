@@ -23,13 +23,15 @@ export interface SearchBookResult {
   authors: { id: number; name: string }[];
   libraries: { id: number; name: string; city: string; region: number; is_available: boolean }[];
 }
+
 export interface Books {
   items: any[];
-  page:number;
-  page_size:number;
-  total:number;
-  total_pages:number;
+  page: number;
+  page_size: number;
+  total: number;
+  total_pages: number;
 }
+
 export interface BookCover {
   id: number;
   cover_url: string | null;
@@ -39,63 +41,42 @@ export interface BookCover {
   providedIn: 'root'
 })
 export class BookService {
+
+  
   #http = inject(HttpClient);
 
-  // ==========================================
-  // STAN WYSZUKIWANIA GLOBALNEGO (SYGNAŁY)
-  // ==========================================
   searchResults = signal<SearchBookResult[]>([]);
   isSearchLoading = signal<boolean>(false);
-  // NOWY SYGNAŁ NA NOWOŚCI Z HOME:
   recentBooksCache = signal<BookCover[]>([]);
 
-  // ==========================================
-  // METODY WYSZUKIWANIA
-  // ==========================================
-  
-  /**
-   * Wywołuje API z podanym ciągiem znaków i zapisuje wyniki w Sygnale.
-   */
-  searchBooksByString(searchTerm: string): Observable<SearchBookResult[]> {
-    this.isSearchLoading.set(true);
+  currentPage = signal<number>(1);
+  totalPages = signal<number>(1);
+  totalItems = signal<number>(0);
 
-    // Parametr zapytania. Zależnie od konfiguracji Twojego backendu,
-    // nazwa parametru to może być 'q', 'query', 'title' lub 'search'.
-    const params = new HttpParams().set('q', searchTerm);
+searchBooksByString(searchTerm: string, page: number = 1): Observable<any> {
+  this.isSearchLoading.set(true);
 
-    return this.#http.get<SearchBookResult[]>(`${environment.apiUrl}/search/books`, { params }).pipe(
-      tap({
-        next: (results) => {
-          console.log('[Service] Otrzymano wyniki wyszukiwania:', results);
-          this.searchResults.set(results);
-          this.isSearchLoading.set(false);
-        },
-        error: (err) => {
-          console.error('[Service] Błąd wyszukiwania:', err);
-          this.searchResults.set([]);
-          this.isSearchLoading.set(false);
-        }
-      })
-    );
-  }
-  
+  const params = new HttpParams()
+    .set('q', searchTerm)
+    .set('page', page.toString()); 
 
-  // ==========================================
-  // POZOSTAŁE METODY
-  // ==========================================
+  return this.#http.get<any>(`${environment.apiUrl}/search/books`, { params }).pipe(
+    tap(response => {
+      if (response && response.items) {
+        this.searchResults.set(response.items);
+        this.currentPage.set(response.page);
+        this.totalPages.set(response.total_pages);
+      }
+      this.isSearchLoading.set(false);
+    })
+  );
+}
 
-  /**
-   * Pobiera konkretne okładki książek na podstawie sztywnej listy ID.
-   */
- getSpecificCovers(): Observable<BookCover[]> {
-    // 1. SPRAWDZAMY CZY MAMY JUŻ DANE W SYGNALE
+  getSpecificCovers(): Observable<BookCover[]> {
     if (this.recentBooksCache().length > 0) {
-      console.log('[Service] Zwracam nowości z Sygnału (bez zapytania HTTP)');
-      // Zwracamy gotowe dane z sygnału udając odpowiedź HTTP za pomocą 'of()'
       return of(this.recentBooksCache());
     }
 
-    // 2. JEŚLI NIE MAMY DANYCH, ROBIMY ZAPYTANIE (tylko za pierwszym razem)
     const specificIds = [56, 59, 60, 62, 63, 78, 89, 90];
 
     const requests: Observable<any>[] = specificIds.map(id => 
@@ -112,9 +93,7 @@ export class BookService {
           cover_url: book.cover_url
         }));
         
-        // 3. ZAPISUJEMY WYNIK DO SYGNAŁU NA PRZYSZŁOŚĆ
         this.recentBooksCache.set(mappedBooks);
-        
         return mappedBooks;
       })
     );

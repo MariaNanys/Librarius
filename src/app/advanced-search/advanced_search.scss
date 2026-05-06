@@ -207,12 +207,9 @@ input, select {
     }
   }
 }
-/* ======================================================== */
-/* STYLE DLA KOMUNIKATU O WYMAGANYM LOGOWANIU               */
-/* ======================================================== */
 .login-required-message {
   width: 65%;
-  position: absolute; // Zgodnie z Twoim obecnym ułożeniem .search_form
+  position: absolute;
   left: 275px;
   text-align: center;
 

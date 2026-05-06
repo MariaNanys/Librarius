@@ -30,7 +30,7 @@
     <input type="password" [formField]="registrationForm.repeatPassword" placeholder="Powtórz hasło"/>
   </label>
   <ul class="password-requirements">
-    <li [class.valid]="registrationForm().controlValue().password && registrationForm().controlValue().password.length >= 8">Min 8 znaków</li>
+    <li [class.valid]="registrationForm().controlValue().password && registrationForm().controlValue().password.length >= 12">Min 12 znaków</li>
     <li [class.valid]="/[A-Z]/.test(registrationForm().controlValue().password || '')">Min 1 duża litera</li>
     <li [class.valid]="/[a-z]/.test(registrationForm().controlValue().password|| '')">Min 1 mała litera</li>
     <li [class.valid]="/[^A-Za-z0-9]/.test(registrationForm().controlValue().password || '')">Min 1 znak specjalny</li>

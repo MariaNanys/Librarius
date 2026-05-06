@@ -1,15 +1,16 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
-import { environment } from '../../../environments/environment'; // dopasuj ścieżkę
+import { Observable, tap } from 'rxjs';
+import { environment } from '../../../environments/environment';
+import { BookService } from './book.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class SearchAdvanceService {
   #http: HttpClient = inject(HttpClient);
+  #bookService: BookService = inject(BookService);
 
-  // 1. Pobieranie słowników do formularza
   getAuthors(): Observable<{ id: number; name: string }[]> {
     return this.#http.get<{ id: number; name: string }[]>(`${environment.apiUrl}/authors`);
   }
@@ -22,17 +23,22 @@ export class SearchAdvanceService {
     return this.#http.get<{ code: string; display: string }[]>(`${environment.apiUrl}/books/languages`);
   }
 
-  // 2. Miejsce na przyszłą metodę wysyłającą cały formularz do BE
   searchBooks(payload: any): Observable<any> {
-    // Zakładam przykładowy endpoint do wyszukiwania
     return this.#http.get(`${environment.apiUrl}/search/books`, {
       params: payload
     });
   }
 
   searchAdvanced(payload: any): Observable<any> {
-    return this.#http.get(`${environment.apiUrl}/search/books/advanced`, {
-      params: payload
-    });
+    return this.#http.get<any>(`${environment.apiUrl}/search/books/advanced`, { params: payload }).pipe(
+      tap(response => {
+        if (response && response.items) {
+          this.#bookService.searchResults.set(response.items);
+          this.#bookService.currentPage.set(response.page);
+          this.#bookService.totalPages.set(response.total_pages);
+        }
+        this.#bookService.isSearchLoading.set(false);
+      })
+    );
   }
 }

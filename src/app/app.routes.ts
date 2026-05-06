@@ -7,6 +7,7 @@ import { RegisterSuccessComponent } from './register-succes/register_success';
 import { BookDetailsComponent } from './book-details/book_details';
 import { SearchResultsComponent } from './search-results/search_results';
 import { UserProfileComponent } from './user-profile/user-profile';
+import { MyReservationsComponent } from './my-reservations/my-reservations';
 
 export const routes: Routes = [
     { path: '', component: HomeComponent },
@@ -17,4 +18,5 @@ export const routes: Routes = [
     { path: 'advanced-search', component: AdvanceSearchComponent },
     { path: 'book/:id', component: BookDetailsComponent },
     { path: 'profile', component: UserProfileComponent },
+    { path: 'reservations', component: MyReservationsComponent },
 ];

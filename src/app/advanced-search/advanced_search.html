@@ -74,51 +74,16 @@
             </label>
         </div>
 
+        @if (isDateRangeInvalid()) {
+            <div style="color: #dc3545; font-size: 0.85rem; margin-top: -10px; margin-bottom: 15px; text-align: center;">
+                Rok wydania "do" nie może być mniejszy niż rok "od".
+            </div>
+        }
+
         <label>
             <input type="text" placeholder="Wydawca" [value]="publisher()"
                 (input)="publisher.set($any($event.target).value)" />
         </label>
-
-        <!-- <div class="custom-multiselect" (click)="$event.stopPropagation()">
-            <div class="dropdown-header" (click)="toggleCategoryDropdown()" [class.is-open]="isCategoryOpen()">
-                <div class="chips-container">
-                    @if (selectedCategoriesObjects().length === 0) {
-                    <span class="placeholder-text">Kategoria</span>
-                    }
-                    @for (cat of selectedCategoriesObjects(); track cat.id) {
-                    <span class="chip">
-                        {{ cat.name }}
-                        <button type="button" class="chip-remove"
-                            (click)="removeSelection(cat.id, $event, selectedCategoryIds)">×</button>
-                    </span>
-                    }
-                </div>
-                <span class="arrow">@if(isCategoryOpen()) { &#9650; } @else { &#9660; }</span>
-            </div>
-
-            @if (isCategoryOpen()) {
-            <div class="dropdown-list">
-                <div class="search-container">
-                    <input type="text" placeholder="Szukaj kategorii" [value]="searchCategoryTerm()"
-                        (input)="updateSearchTerm($event, searchCategoryTerm)" (click)="$event.stopPropagation()">
-                </div>
-                <div class="options-container">
-                    @for (cat of filteredCategories(); track cat.id) {
-                    <label class="dropdown-item" (click)="$event.stopPropagation()">
-                        <input type="checkbox" [checked]="selectedCategoryIds().includes(cat.id)"
-                            (change)="toggleSelection(cat.id, selectedCategoryIds)">
-                        <span class="custom-cb"></span>
-                        <span class="label-text">{{ cat.name }}</span>
-                    </label>
-                    }
-                    @if (filteredCategories().length === 0) {
-                    <div class="no-results">Nie znaleziono kategorii</div>
-                    }
-                </div>
-            </div>
-            }
-        </div> -->
-
         <div class="custom-multiselect" (click)="$event.stopPropagation()">
             <div class="dropdown-header" (click)="toggleLanguageDropdown()" [class.is-open]="isLanguageOpen()">
                 <div class="chips-container">
@@ -159,13 +124,15 @@
             }
         </div>
 
-        <div class="form-actions" style="margin-top: 30px; display: flex; justify-content: center;">
+       <div class="form-actions" style="width: 100%; grid-column: 1 / -1; margin-top: 40px; margin-bottom: 20px; display: flex; justify-content: center;">
             <button type="button" (click)="onSubmit()"
-                style="background-color: #4A3B28; color: white; padding: 15px 40px; border-radius: 25px; border: none; font-size: 16px; cursor: pointer;">
+                [disabled]="isDateRangeInvalid()"
+                [style.opacity]="isDateRangeInvalid() ? '0.5' : '1'"
+                [style.cursor]="isDateRangeInvalid() ? 'not-allowed' : 'pointer'"
+                style="background-color: #4A3B28; color: white; padding: 15px 40px; border-radius: 25px; border: none; font-size: 16px; transition: opacity 0.3s;">
                 Szukaj książki
             </button>
         </div>
-
     </form>
 </div>
 } @else {

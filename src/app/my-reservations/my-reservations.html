@@ -1,0 +1,164 @@
+<div class="page-container">
+
+<h1 class="page-title">Moje rezerwacje</h1>
+
+<div class="search-bar">
+  <span class="search-icon">
+    <img src="/assets/magnifying-glass.png" alt="Szukaj">
+  </span>
+  <input
+    type="text"
+    placeholder="Wyszukaj rezerwację"
+    [value]="searchTerm()"
+    (input)="onSearchChange($any($event.target).value)"
+  >
+</div>
+
+<div class="filter-pills">
+  <button [class.active]="activeFilter() === 'all'" (click)="setFilter('all')">Wszystkie</button>
+  <button [class.active]="activeFilter() === 'pending'" (click)="setFilter('pending')">Oczekujące</button>
+  <button [class.active]="activeFilter() === 'accepted'" (click)="setFilter('accepted')">Potwierdzone</button>
+  <button [class.active]="activeFilter() === 'ended'" (click)="setFilter('ended')">Zakończone</button>
+</div>
+
+@if (isLoading()) {
+  <p class="loading-text">Ładowanie rezerwacji...</p>
+} @else if (loadError()) {
+  <div class="error-box">
+    <p>{{ loadError() }}</p>
+    <button class="retry-btn" (click)="loadReservations()">Spróbuj ponownie</button>
+  </div>
+} @else if (paginatedGroups().length === 0) {
+  <p class="empty-text">Brak rezerwacji do wyświetlenia.</p>
+} @else {
+  @for (group of paginatedGroups(); track group.date) {
+    <fieldset class="reservation-group">
+      <legend>{{ group.date }}</legend>
+      @for (r of group.items; track r.id) {
+        <div class="reservation-row">
+          <img [src]="getCover(r.book.cover_url)" alt="Okładka" class="row-cover">
+
+          <div class="row-main">
+            <p class="row-id">Rezerwacja <strong>#{{ r.id }}</strong></p>
+            <p class="row-book">
+              <strong>{{ r.book.title }}</strong>
+              <span class="row-author">{{ r.book.authors[0]?.name }}</span>
+            </p>
+            <p class="row-library">
+              {{ r.library.name }}<br>
+              {{ r.library.address }}, {{ r.library.city }}
+            </p>
+          </div>
+
+          <div class="row-side">
+            <span
+              class="status-pill"
+              [class.status-pending]="isPending(r.status.name)"
+              [class.status-accepted]="isAccepted(r.status.name)"
+              [class.status-ended]="isEnded(r.status.name)"
+            >
+              {{ statusLabel(r.status.name) }}
+            </span>
+
+            @if (isEnded(r.status.name) && r.end_time) {
+              <p class="row-deadline">Zakończono: {{ formatDateTime(r.end_time) }}</p>
+            }
+          </div>
+
+          <button
+            class="row-close"
+            [disabled]="!canCancel(r.status.name)"
+            (click)="openCancelPopup(r)"
+            title="Anuluj rezerwację"
+          >×</button>
+        </div>
+      }
+    </fieldset>
+  }
+
+  <div class="pagination-wrapper">
+    <button
+      class="pagination-btn"
+      (click)="changePage(currentPage() - 1)"
+      [disabled]="currentPage() === 1"
+    >
+      <span class="arrow">&laquo;</span> Poprzednia
+    </button>
+
+    <div class="page-counter">
+      Strona
+      @if (!isEditingPage()) {
+        <strong (click)="toggleEditPage()" title="Kliknij, aby wpisać numer strony">
+          {{ currentPage() }}
+        </strong>
+      } @else {
+        <input
+          type="number"
+          [value]="currentPage()"
+          (keydown.enter)="handlePageInput($event)"
+          (blur)="isEditingPage.set(false)"
+          class="page-input"
+          [max]="totalPages()"
+          min="1"
+        >
+      }
+      z <span>{{ totalPages() }}</span>
+    </div>
+
+    <button
+      class="pagination-btn"
+      (click)="changePage(currentPage() + 1)"
+      [disabled]="currentPage() === totalPages()"
+    >
+      Następna <span class="arrow">&raquo;</span>
+    </button>
+  </div>
+}
+
+</div>
+
+@if (successPopupOpen()) {
+  <div class="popup-overlay">
+    <div class="popup-card popup-card-small">
+      <p class="popup-message">Rezerwacja anulowana pomyślnie.</p>
+    </div>
+  </div>
+}
+
+@if (cancelPopupOpen() && reservationToCancel(); as toCancel) {
+  <div class="popup-overlay" (click)="closeCancelPopup()">
+    <div class="popup-card" (click)="$event.stopPropagation()">
+      <h2 class="popup-title">Anuluj rezerwację</h2>
+
+      <div class="popup-info">
+        <div class="popup-row">
+          <span class="popup-label">Nr rezerwacji:</span>
+          <span class="popup-value">{{ toCancel.id }}</span>
+        </div>
+        <div class="popup-row">
+          <span class="popup-label">Tytuł:</span>
+          <span class="popup-value">{{ toCancel.book.title }}</span>
+        </div>
+        <div class="popup-row">
+          <span class="popup-label">Biblioteka:</span>
+          <span class="popup-value">{{ toCancel.library.name }}</span>
+        </div>
+        <div class="popup-row">
+          <span class="popup-label">Data rezerwacji:</span>
+          <span class="popup-value">{{ formatDate(toCancel.start_time) }}</span>
+        </div>
+      </div>
+
+      @if (cancelError()) {
+        <p class="popup-error">{{ cancelError() }}</p>
+      }
+
+      <div class="popup-actions">
+        <button type="button" class="btn-back" (click)="closeCancelPopup()" [disabled]="isCancelling()">Powrót</button>
+        <button type="button" class="btn-cancel-confirm" (click)="confirmCancel()" [disabled]="isCancelling()">
+          {{ isCancelling() ? 'Anulowanie...' : 'Anuluj' }}
+        </button>
+      </div>
+    </div>
+  </div>
+}
