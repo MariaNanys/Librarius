@@ -1,4 +1,5 @@
 import { Component, computed, inject, OnDestroy, OnInit, signal } from '@angular/core';
+import { RouterLink } from '@angular/router';
 import { Reservation, ReservationService } from '../services/reservation.service';
 
 type Filter = 'all' | 'pending' | 'accepted' | 'ended';
@@ -7,7 +8,7 @@ type ReservationGroup = { date: string; items: Reservation[] };
 @Component({
   selector: 'app-my-reservations',
   standalone: true,
-  imports: [],
+  imports: [RouterLink],
   templateUrl: './my-reservations.html',
   styleUrl: './my-reservations.scss',
 })

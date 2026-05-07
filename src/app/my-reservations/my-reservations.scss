@@ -255,13 +255,23 @@ $cream: #fdf9ef;
     border-top: 1px solid #ece6d3;
   }
 
+  .row-cover-link {
+    flex-shrink: 0;
+    display: inline-block;
+    transition: transform 0.15s ease;
+
+    &:hover {
+      transform: translateY(-2px);
+    }
+  }
+
   .row-cover {
     width: 80px;
     height: 110px;
     object-fit: cover;
     border-radius: 4px;
     box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.1);
-    flex-shrink: 0;
+    display: block;
   }
 
   .row-main {
@@ -280,19 +290,29 @@ $cream: #fdf9ef;
       }
     }
 
-    .row-book {
-      font-size: 18px;
-      color: $brown;
+    .row-book-link {
+      display: block;
+      text-decoration: none;
+      color: inherit;
+      margin: 0 0 4px 0;
 
-      strong {
+      .row-title {
+        display: block;
+        font-size: 18px;
         font-weight: 700;
-        margin-right: 8px;
+        color: $brown;
       }
 
       .row-author {
+        display: block;
         font-weight: 400;
         color: $muted;
         font-size: 16px;
+        margin-top: 2px;
+      }
+
+      &:hover .row-title {
+        text-decoration: underline;
       }
     }
 

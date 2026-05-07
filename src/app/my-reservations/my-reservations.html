@@ -36,14 +36,16 @@
       <legend>{{ group.date }}</legend>
       @for (r of group.items; track r.id) {
         <div class="reservation-row">
-          <img [src]="getCover(r.book.cover_url)" alt="Okładka" class="row-cover">
+          <a [routerLink]="['/book', r.book.id]" class="row-cover-link">
+            <img [src]="getCover(r.book.cover_url)" alt="Okładka" class="row-cover">
+          </a>
 
           <div class="row-main">
             <p class="row-id">Rezerwacja <strong>#{{ r.id }}</strong></p>
-            <p class="row-book">
-              <strong>{{ r.book.title }}</strong>
+            <a [routerLink]="['/book', r.book.id]" class="row-book-link">
+              <strong class="row-title">{{ r.book.title }}</strong>
               <span class="row-author">{{ r.book.authors[0]?.name }}</span>
-            </p>
+            </a>
             <p class="row-library">
               {{ r.library.name }}<br>
               {{ r.library.address }}, {{ r.library.city }}

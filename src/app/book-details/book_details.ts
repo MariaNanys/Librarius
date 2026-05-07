@@ -10,7 +10,6 @@ import { ReservationService } from '../services/reservation.service';
   templateUrl: './book_details.html',
   styleUrl: './book_details.scss',
   standalone: true,
-  imports: []
 })
 export class BookDetailsComponent implements OnInit, OnDestroy {
   private route = inject(ActivatedRoute);
