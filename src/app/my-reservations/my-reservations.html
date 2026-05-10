@@ -62,8 +62,11 @@
               {{ statusLabel(r.status.name) }}
             </span>
 
-            @if (isEnded(r.status.name) && r.end_time) {
-              <p class="row-deadline">Zakończono: {{ formatDateTime(r.end_time) }}</p>
+            @if (isAccepted(r.status.name)) {
+              <p class="row-deadline">Odbiór do {{ r.end_time ? formatDateTime(r.end_time) : '[data i godzina]' }}</p>
+            }
+            @if (isEnded(r.status.name)) {
+              <p class="row-deadline">Zakończono {{ r.end_time ? formatDateTime(r.end_time) : '[data i godzina]' }}</p>
             }
           </div>
 

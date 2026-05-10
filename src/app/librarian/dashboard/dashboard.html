@@ -1,0 +1,87 @@
+@if (isLoading()) {
+  <p class="loading">Ładowanie...</p>
+} @else if (loadError()) {
+  <p class="error">{{ loadError() }}</p>
+} @else {
+  <div class="stat-row">
+    <a class="stat-card" routerLink="/librarian/reservations" [queryParams]="{filter: 'pending'}">
+      <div class="stat-label">Oczekujące rezerwacje</div>
+      <div class="stat-value">{{ pendingCount() }}</div>
+    </a>
+    <a class="stat-card" routerLink="/librarian/reservations" [queryParams]="{filter: 'accepted'}">
+      <div class="stat-label">Potwierdzone rezerwacje</div>
+      <div class="stat-value">{{ acceptedCount() }}</div>
+    </a>
+    <a class="stat-card" routerLink="/librarian/reservations" [queryParams]="{filter: 'ended'}">
+      <div class="stat-label">Zakończone rezerwacje</div>
+      <div class="stat-value">{{ endedCount() }}</div>
+    </a>
+  </div>
+
+  <h2 class="section-title">Oczekujące rezerwacje</h2>
+
+  @if (pendingReservations().length === 0) {
+    <p class="empty">Brak oczekujących rezerwacji.</p>
+  } @else {
+    <table class="reservations-table">
+      <thead>
+        <tr>
+          <th class="col-toggle"></th>
+          <th>Nr</th>
+          <th>ISBN</th>
+          <th>Data rezerwacji</th>
+          <th>Koniec rezerwacji</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (r of pendingReservations(); track r.id) {
+          <tr class="row-main" [class.expanded]="expandedId() === r.id">
+            <td class="col-toggle">
+              <button
+                type="button"
+                class="toggle"
+                [class.open]="expandedId() === r.id"
+                (click)="toggleExpand(r.id)"
+                [attr.aria-label]="expandedId() === r.id ? 'Zwiń' : 'Rozwiń'">
+                ▶
+              </button>
+            </td>
+            <td>{{ r.id }}</td>
+            <td>{{ r.book.isbn || '-' }}</td>
+            <td>{{ formatDate(r.start_time) }}</td>
+            <td>{{ formatDate(r.end_time) }}</td>
+            <td>
+              <span class="status-badge status-pending">Oczekująca</span>
+            </td>
+          </tr>
+          @if (expandedId() === r.id) {
+            <tr class="row-detail">
+              <td></td>
+              <td colspan="5">
+                <div class="detail-grid">
+                  <div class="detail-block">
+                    <h4>DANE REZERWUJĄCEGO</h4>
+                    <p class="detail-label">Imię i nazwisko</p>
+                    <p class="detail-value">{{ readerName(r) }}</p>
+                    <p class="detail-label">Adres e-mail</p>
+                    <p class="detail-value">{{ r.reader?.email || '-' }}</p>
+                  </div>
+                  <div class="detail-block">
+                    <h4>DANE O KSIĄŻCE</h4>
+                    <p class="detail-label">Tytuł książki</p>
+                    <p class="detail-value">{{ r.book.title }}</p>
+                    <p class="detail-label">Autor książki</p>
+                    <p class="detail-value">{{ authorsLabel(r) }}</p>
+                    <p class="detail-label">ISBN</p>
+                    <p class="detail-value">{{ r.book.isbn || '-' }}</p>
+                  </div>
+                </div>
+              </td>
+            </tr>
+          }
+        }
+      </tbody>
+    </table>
+  }
+}

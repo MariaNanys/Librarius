@@ -25,8 +25,16 @@ export interface ReservationBookAuthor {
 export interface ReservationBook {
   id: number;
   title: string;
+  isbn?: string;
   cover_url: string | null;
   authors: ReservationBookAuthor[];
+}
+
+export interface ReservationReader {
+  id: number;
+  first_name: string;
+  last_name: string;
+  email: string;
 }
 
 export interface Reservation {
@@ -36,6 +44,7 @@ export interface Reservation {
   end_time: string | null;
   library: ReservationLibrary;
   book: ReservationBook;
+  reader?: ReservationReader;
 }
 
 @Injectable({ providedIn: 'root' })
@@ -61,6 +70,18 @@ export class ReservationService {
   cancel(id: number): Observable<unknown> {
     return this.#http
       .delete(`${environment.apiUrl}/reservations/${id}`)
+      .pipe(tap(() => this.#cache.clear(this.#listCacheKey)));
+  }
+
+  accept(id: number): Observable<Reservation> {
+    return this.#http
+      .put<Reservation>(`${environment.apiUrl}/reservations/${id}`, { status_id: 2 })
+      .pipe(tap(() => this.#cache.clear(this.#listCacheKey)));
+  }
+
+  reject(id: number): Observable<Reservation> {
+    return this.#http
+      .put<Reservation>(`${environment.apiUrl}/reservations/${id}`, { status_id: 7 })
       .pipe(tap(() => this.#cache.clear(this.#listCacheKey)));
   }
 }

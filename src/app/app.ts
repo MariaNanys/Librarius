@@ -18,6 +18,7 @@ export class App {
 
   protected readonly title = signal('Librarius');
   user = this.authService.currentUser;
+  isLibrarian = this.authService.isLibrarian;
   dropdownOpen = signal(false);
   private closeTimer: any = null;
 

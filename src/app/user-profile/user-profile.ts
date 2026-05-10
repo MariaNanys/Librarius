@@ -1,5 +1,6 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import { AuthService } from '../services/auth.service';
+import { Library, LibraryService } from '../services/library.service';
 import { form, FormField, required, email, submit } from '@angular/forms/signals';
 
 @Component({
@@ -8,11 +9,24 @@ import { form, FormField, required, email, submit } from '@angular/forms/signals
   templateUrl: './user-profile.html',
   styleUrl: './user-profile.scss'
 })
-export class UserProfileComponent {
+export class UserProfileComponent implements OnInit {
   private authService = inject(AuthService);
+  private libraryService = inject(LibraryService);
 
   user = this.authService.currentUser;
+  isLibrarian = this.authService.isLibrarian;
   isEditing = signal(false);
+  library = signal<Library | null>(null);
+
+  ngOnInit(): void {
+    const libraryId = this.user()?.library_id;
+    if (this.isLibrarian() && libraryId) {
+      this.libraryService.get(libraryId).subscribe({
+        next: (lib) => this.library.set(lib),
+        error: (err) => console.error('Nie udało się pobrać biblioteki:', err),
+      });
+    }
+  }
 
   regions = [
     { id: 1, name: 'Dolnośląskie' },
