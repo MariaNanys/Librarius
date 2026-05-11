@@ -1,0 +1,150 @@
+.stat-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 32px;
+  margin: 32px 0 48px;
+}
+
+.stat-card {
+  background: #faf6e6;
+  border-radius: 18px;
+  padding: 24px 32px 32px;
+  text-align: center;
+  box-shadow: 0 6px 0 #b6c08a;
+  min-height: 110px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  text-decoration: none;
+  color: inherit;
+  cursor: pointer;
+  transition: transform 0.15s, box-shadow 0.15s;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 0 #aab880;
+  }
+}
+
+.stat-label {
+  color: #4a4a2e;
+  font-size: 14px;
+  margin-bottom: 8px;
+}
+
+.stat-value {
+  color: #2d2d1a;
+  font-size: 56px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.section-title {
+  color: #41431B;
+  font-size: 26px;
+  margin: 0 0 24px;
+}
+
+.reservations-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+
+  th {
+    color: #2d2d1a;
+    font-weight: 600;
+    text-align: center;
+    padding: 12px 8px;
+    border-bottom: 1px solid #e0dcc4;
+  }
+
+  td {
+    color: #2d2d1a;
+    padding: 14px 8px;
+    text-align: center;
+    border-bottom: 1px solid #ece8d2;
+  }
+
+  .col-toggle {
+    width: 36px;
+  }
+}
+
+.toggle {
+  background: none;
+  border: none;
+  font-size: 12px;
+  color: #41431B;
+  cursor: pointer;
+  padding: 4px 8px;
+  transition: transform 0.15s;
+  line-height: 1;
+
+  &.open {
+    transform: rotate(90deg);
+  }
+}
+
+.row-main.expanded td {
+  border-bottom: none;
+  background: #ece8d2;
+}
+
+.row-detail td {
+  background: #ece8d2;
+  padding: 0 8px 24px;
+}
+
+.detail-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 32px;
+  text-align: left;
+  padding: 8px 24px 16px;
+
+  h4 {
+    color: #2d2d1a;
+    font-size: 14px;
+    font-weight: 700;
+    margin: 0 0 12px;
+    letter-spacing: 0.5px;
+  }
+}
+
+.detail-label {
+  color: #6b6b50;
+  font-size: 11px;
+  margin: 6px 0 2px;
+}
+
+.detail-value {
+  color: #2d2d1a;
+  font-size: 14px;
+  margin: 0 0 6px;
+}
+
+.status-badge {
+  display: inline-block;
+  padding: 4px 14px;
+  border-radius: 14px;
+  font-size: 13px;
+  border: 1px solid transparent;
+}
+
+.status-pending {
+  background: #f5e6a8;
+  color: #6b5a1c;
+  border-color: #d8c570;
+}
+
+.loading,
+.error,
+.empty {
+  text-align: center;
+  color: #6b6b50;
+  padding: 24px;
+}
+
+.error {
+  color: #c0392b;
+}

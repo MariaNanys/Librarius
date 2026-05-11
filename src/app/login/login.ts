@@ -37,7 +37,8 @@ export class LoginComponent {
           const result: any = await firstValueFrom(this.authService.login(credentials));
           localStorage.setItem('token', result.token);
           this.authService.setUserToStorage(result.token);
-          await this.router.navigate(['/']);
+          const target = this.authService.isLibrarian() ? '/librarian' : '/';
+          await this.router.navigate([target]);
         } catch (error) {
           console.error('Błąd logowania lub pobierania profilu:', error);
         }

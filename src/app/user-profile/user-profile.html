@@ -30,20 +30,27 @@
       }
     </div>
 
-    <div class="field">
-      <span class="field-label">Województwo</span>
-      @if (isEditing()) {
-        <select [formField]="editForm.region">
-          @for (r of regions; track r.id) {
-            <option [value]="r.id" [selected]="r.id === +editModel().region">
-              {{ r.name }}
-            </option>
-          }
-        </select>
-      } @else {
-        <span class="field-value">{{ getRegionName(user()!.region) }}</span>
-      }
-    </div>
+    @if (isLibrarian()) {
+      <div class="field">
+        <span class="field-label">Biblioteka</span>
+        <span class="field-value">{{ library()?.name ?? '—' }}</span>
+      </div>
+    } @else {
+      <div class="field">
+        <span class="field-label">Województwo</span>
+        @if (isEditing()) {
+          <select [formField]="editForm.region">
+            @for (r of regions; track r.id) {
+              <option [value]="r.id" [selected]="r.id === +editModel().region">
+                {{ r.name }}
+              </option>
+            }
+          </select>
+        } @else {
+          <span class="field-value">{{ getRegionName(user()!.region) }}</span>
+        }
+      </div>
+    }
 
     <div class="field">
       <span class="field-label">Email</span>

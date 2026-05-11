@@ -6,7 +6,11 @@
     @if (user()) {
       <div class="dropdown-wrap">
         <button class="dropdown-trigger" (click)="toggleDropdown()">
-          Cześć, {{ user()!.first_name }}! ▾
+          @if (isLibrarian()) {
+            Cześć, Bibliotekarzu! ▾
+          } @else {
+            Cześć, {{ user()!.first_name }}! ▾
+          }
         </button>
         @if (dropdownOpen()) {
           <div class="dropdown-menu">

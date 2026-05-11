@@ -1,5 +1,5 @@
 import { HttpClient } from "@angular/common/http";
-import { inject, Injectable, signal } from "@angular/core";
+import { computed, inject, Injectable, signal } from "@angular/core";
 import { environment } from "../../../environments/environment";
 import { Observable } from "rxjs";
 import { jwtDecode } from "jwt-decode";
@@ -12,6 +12,8 @@ export interface User {
   last_name: string;
   email: string;
   region: string;
+  role_id?: number;
+  library_id?: number;
 }
 
 @Injectable({
@@ -28,6 +30,10 @@ export class AuthService {
     }, 60000)
   }
   currentUser = signal<User | null>(this.#getUserFromStorage());
+  isLibrarian = computed(() => {
+    const user = this.currentUser();
+    return !!user && !!user.role_id;
+  });
   refreshUserFromProfile(profile: any) {
     const current = this.currentUser();
     if (current) {

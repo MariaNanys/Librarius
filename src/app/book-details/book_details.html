@@ -3,10 +3,10 @@
         <span class="search-icon" (click)="onSearch(searchInput.value)" style="cursor: pointer;">
             <img src="/assets/magnifying-glass.png" alt="Szukaj">
         </span>
-        
-        <input 
-            #searchInput 
-            type="text" 
+
+        <input
+            #searchInput
+            type="text"
             placeholder="Wyszukaj książkę"
             (keyup.enter)="onSearch(searchInput.value)"
         >
@@ -16,12 +16,12 @@
 @if (isLoading) {
     <p class="loading-text">Ładowanie szczegółów książki...</p>
 } @else if (bookDetails) {
-    
+
     <div class="details-container">
-        
+
         <div class="back-button-container">
             <button class="back-btn" (click)="goBack()">
-                &larr; Powrót 
+                &larr; Powrót
             </button>
         </div>
 
@@ -48,11 +48,11 @@
 
                     <div class="description-box">
                         <span class="label">Opis:</span>
-                        
+
                         <p class="description-text" [class.expanded]="isExpanded">
                             {{ displayDescription }}
                         </p>
-                        
+
                         @if (isLongDescription) {
                             <div class="read-more-container">
                                 <a href="#" class="read-more" (click)="toggleDescription($event)">
@@ -77,13 +77,13 @@
                 <div class="lib-status" [class.status-available]="lib.is_available" [class.status-unavailable]="!lib.is_available">
                     {{ lib.is_available ? 'Dostępna' : 'Niedostępne' }}
                 </div>
-                
-                <button 
-                    class="reserve-btn" 
+
+                <button
+                    class="reserve-btn"
                     [class.btn-disabled]="!lib.is_available && isLoggedIn"
                     [class.btn-login-required]="!isLoggedIn"
                     [disabled]="!lib.is_available && isLoggedIn"
-                    [routerLink]="redirectLink()"
+                    (click)="handleReservation(lib.id)"
                 >
                     @if (isLoggedIn) {
                         Zarezerwuj
@@ -101,4 +101,59 @@
     </div>
 } @else {
     <p>Nie znaleziono książki.</p>
+}
+
+@if (successPopupOpen) {
+    <div class="popup-overlay">
+        <div class="popup-card popup-card-small">
+            <h2 class="popup-success-title">Sukces!</h2>
+            <p class="popup-message">Rezerwacja przebiegła pomyślnie.</p>
+        </div>
+    </div>
+}
+
+@if (popupOpen && bookDetails) {
+    <div class="popup-overlay" (click)="closePopup()">
+        <div class="popup-card" (click)="$event.stopPropagation()">
+            <h2 class="popup-title">Rezerwacja książki</h2>
+
+            <div class="popup-book">
+                <img [src]="getCover(bookDetails.cover_url)" alt="Okładka" class="popup-cover">
+                <div class="popup-book-info">
+                    <h3>{{ bookDetails.title }}</h3>
+                    <p>{{ bookDetails.authors?.[0]?.name || 'Nieznany autor' }}</p>
+                </div>
+            </div>
+
+            <div class="popup-field">
+                <label for="library-select" class="floating-label">Wybierz bibliotekę</label>
+                <select id="library-select" (change)="onLibraryChange($any($event.target).value)">
+                    @for (lib of libraries; track lib.id) {
+                        <option [value]="lib.id" [disabled]="!lib.is_available" [selected]="lib.id === selectedLibraryId">
+                            {{ lib.name }}, {{ lib.city }}
+                        </option>
+                    }
+                </select>
+            </div>
+
+            @if (selectedLibrary; as lib) {
+                <p class="popup-status" [class.status-available]="lib.is_available" [class.status-unavailable]="!lib.is_available">
+                    {{ lib.is_available ? 'Dostępna' : 'Niedostępna' }}
+                </p>
+            }
+
+            @if (saveError) {
+                <p class="popup-error">{{ saveError }}</p>
+            }
+
+            <div class="popup-actions">
+                <button type="button" class="btn-cancel" (click)="closePopup()" [disabled]="isSaving">Anuluj</button>
+                <button type="button" class="btn-confirm" (click)="confirmReservation()" [disabled]="!selectedLibrary?.is_available || isSaving">
+                    {{ isSaving ? 'Zapisywanie...' : 'Potwierdź rezerwację' }}
+                </button>
+            </div>
+
+            <p class="popup-note"><strong>UWAGA!</strong> Po potwierdzeniu, masz 48 godzin na odbiór książki.</p>
+        </div>
+    </div>
 }

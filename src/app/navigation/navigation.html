@@ -1,6 +1,6 @@
 <nav class="main-navigation">
   <div class="nav-logo">
-    <a routerLink="/">
+    <a [routerLink]="isLibrarian() ? '/librarian' : '/'">
       <img src="../../assets/logotype.png" alt="Logo aplikacji">
     </a>
   </div>
@@ -8,13 +8,15 @@
     <ul class="nav-links">
       @for (item of menuItems(); track item.path) {
         <li>
-          <a [routerLink]="item.path" routerLinkActive="active">
+          <a [routerLink]="item.path"
+             routerLinkActive="active"
+             [routerLinkActiveOptions]="{ exact: !!item.exact }">
             {{item.label}}
           </a>
         </li>
       }
     </ul>
-    @if (user()) {
+    @if (user() && !isLibrarian()) {
       <ul class="nav-links-loged">
         <li>
           <a routerLink="/reservations" routerLinkActive="active">Moje rezerwacje</a>
