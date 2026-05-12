@@ -26,7 +26,7 @@ export class NavigationComponent {
         { path: '/librarian', label: 'Strona główna', exact: true },
         { path: '/advanced-search', label: 'Wyszukaj książkę' },
         { path: '/librarian/reservations', label: 'Zarządzaj rezerwacjami' },
-        { label: 'Zarządzaj czytelnikami' },
+        { path: '/librarian/readers', label: 'Zarządzaj czytelnikami' },
       ];
     }
     return [

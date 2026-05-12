@@ -1,0 +1,111 @@
+<h1>Czytelnicy</h1>
+
+<div class="search-bar">
+  <span class="search-icon">
+    <img src="/assets/magnifying-glass.png" alt="Szukaj">
+  </span>
+  <input
+    type="text"
+    placeholder="Wyszukaj czytelnika"
+    [value]="searchTerm()"
+    (input)="onSearchChange($any($event.target).value)" />
+</div>
+
+@if (isLoading()) {
+  <p class="info">Ładowanie...</p>
+} @else if (loadError()) {
+  <p class="error">{{ loadError() }}</p>
+} @else if (filteredReaders().length === 0) {
+  <p class="info">Brak czytelników.</p>
+} @else {
+  <table class="readers-table">
+    <thead>
+      <tr>
+        <th class="col-toggle"></th>
+        <th>Nr</th>
+        <th>Login</th>
+        <th>Adres e-mail</th>
+        <th>Imię i nazwisko</th>
+      </tr>
+    </thead>
+    <tbody>
+      @for (r of paginatedReaders(); track r.id) {
+        <tr class="row-main"
+            [class.expanded]="expandedId() === r.id"
+            (click)="toggleExpand(r.id)">
+          <td class="col-toggle">
+            <span class="toggle" [class.open]="expandedId() === r.id">▶</span>
+          </td>
+          <td>{{ r.id }}</td>
+          <td>{{ r.username }}</td>
+          <td>{{ r.email }}</td>
+          <td>{{ fullName(r) }}</td>
+        </tr>
+        @if (expandedId() === r.id) {
+          <tr class="row-detail">
+            <td></td>
+            <td colspan="4">
+              <div class="detail-grid">
+                <div class="detail-block">
+                  <h4>DANE CZYTELNIKA</h4>
+                  <p class="detail-label">Imię i nazwisko</p>
+                  <p class="detail-value">{{ fullName(r) }}</p>
+                  <p class="detail-label">Adres e-mail</p>
+                  <p class="detail-value">{{ r.email }}</p>
+                  <p class="detail-label">Region</p>
+                  <p class="detail-value">{{ regionName(r.region) }}</p>
+                  <p class="detail-label">Data dołączenia</p>
+                  <p class="detail-value">{{ formatDate(r.date_joined) }}</p>
+                </div>
+                <div class="detail-block">
+                  <h4>DANE O REZERWACJACH</h4>
+                  <p class="detail-label">Aktywne rezerwacje</p>
+                  <p class="detail-value">{{ r.activeCount }}</p>
+                  <p class="detail-label">Zrealizowane rezerwacje</p>
+                  <p class="detail-value">{{ r.completedCount }}</p>
+                  <p class="detail-label">Niezrealizowane rezerwacje</p>
+                  <p class="detail-value">{{ r.failedCount }}</p>
+                </div>
+              </div>
+            </td>
+          </tr>
+        }
+      }
+    </tbody>
+  </table>
+
+  <div class="pagination-wrapper">
+    <button
+      class="pagination-btn"
+      (click)="changePage(currentPage() - 1)"
+      [disabled]="currentPage() === 1">
+      <span class="arrow">&laquo;</span> Poprzednia
+    </button>
+
+    <div class="page-counter">
+      Strona
+      @if (!isEditingPage()) {
+        <strong (click)="toggleEditPage()" title="Kliknij, aby wpisać numer strony">
+          {{ currentPage() }}
+        </strong>
+      } @else {
+        <input
+          type="number"
+          [value]="currentPage()"
+          (keydown.enter)="handlePageInput($event)"
+          (blur)="isEditingPage.set(false)"
+          class="page-input"
+          [max]="totalPages()"
+          min="1" />
+      }
+      z <span>{{ totalPages() }}</span>
+    </div>
+
+    <button
+      class="pagination-btn"
+      (click)="changePage(currentPage() + 1)"
+      [disabled]="currentPage() === totalPages()">
+      Następna <span class="arrow">&raquo;</span>
+    </button>
+  </div>
+}

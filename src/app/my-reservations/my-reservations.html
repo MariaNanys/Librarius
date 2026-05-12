@@ -63,10 +63,10 @@
             </span>
 
             @if (isAccepted(r.status.name)) {
-              <p class="row-deadline">Odbiór do {{ r.end_time ? formatDateTime(r.end_time) : '[data i godzina]' }}</p>
+              <p class="row-deadline">Odbiór do {{ formatDateTime(r.planned_end_time ?? r.end_time ?? r.updated_at) }}</p>
             }
             @if (isEnded(r.status.name)) {
-              <p class="row-deadline">Zakończono {{ r.end_time ? formatDateTime(r.end_time) : '[data i godzina]' }}</p>
+              <p class="row-deadline">Zakończono {{ formatDateTime(r.end_time ?? r.updated_at) }}</p>
             }
           </div>
 
