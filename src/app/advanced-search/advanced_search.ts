@@ -11,6 +11,7 @@ export interface SearchBookPayload {
   published_year_max?: string;
   publisher?: string;
   languages?: string[] | string;
+  library_id?: number;
 }
 
 @Component({
@@ -113,6 +114,11 @@ export class AdvanceSearchComponent implements OnInit {
     if (!payload.publisher) delete payload.publisher;
     if (!payload.author_ids) delete payload.author_ids;
     if (!payload.languages) delete payload.languages;
+
+    const user = this.authService.currentUser();
+    if (this.authService.isLibrarian() && user?.library_id) {
+      payload.library_id = user.library_id;
+    }
 
     this.router.navigate(['/search'], { queryParams: { ...payload, advanced: 'true' } });
   }

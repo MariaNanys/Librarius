@@ -149,9 +149,7 @@ export class LibrarianReservationsComponent implements OnInit {
   }
 
   endTimeDisplay(r: Reservation): string {
-    if (r.status.name === 'pending') return '-';
-    if (r.end_time) return this.formatDate(r.end_time);
-    return '-';
+    return this.formatDate(r.planned_end_time ?? r.end_time ?? r.updated_at);
   }
 
   authorsLabel(r: Reservation): string {

@@ -10,6 +10,7 @@ import { UserProfileComponent } from './user-profile/user-profile';
 import { MyReservationsComponent } from './my-reservations/my-reservations';
 import { LibrarianDashboardComponent } from './librarian/dashboard/dashboard';
 import { LibrarianReservationsComponent } from './librarian/reservations/reservations';
+import { LibrarianReadersComponent } from './librarian/readers/readers';
 import { librarianGuard } from './guards/librarian.guard';
 
 export const routes: Routes = [
@@ -28,6 +29,7 @@ export const routes: Routes = [
         children: [
             { path: '', component: LibrarianDashboardComponent },
             { path: 'reservations', component: LibrarianReservationsComponent },
+            { path: 'readers', component: LibrarianReadersComponent },
         ],
     },
 ];

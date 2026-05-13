@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
-import { Observable, tap } from 'rxjs';
+import { map, Observable, tap } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { CacheService } from './cache.service';
 
@@ -32,9 +32,13 @@ export interface ReservationBook {
 
 export interface ReservationReader {
   id: number;
+  username: string;
   first_name: string;
   last_name: string;
   email: string;
+  region: number | null;
+  date_joined: string;
+  is_active: boolean;
 }
 
 export interface Reservation {
@@ -42,9 +46,15 @@ export interface Reservation {
   status: ReservationStatus;
   start_time: string;
   end_time: string | null;
+  updated_at: string;
+  planned_end_time: string | null;
   library: ReservationLibrary;
   book: ReservationBook;
   reader?: ReservationReader;
+}
+
+interface PaginatedReservations {
+  items: Reservation[];
 }
 
 @Injectable({ providedIn: 'root' })
@@ -52,7 +62,7 @@ export class ReservationService {
   #http = inject(HttpClient);
   #cache = inject(CacheService);
 
-  #listCacheKey = `${environment.apiUrl}/reservations`;
+  #listCacheKey = `${environment.apiUrl}/reservations?page_size=100`;
 
   create(bookId: number, libraryId: number): Observable<Reservation> {
     return this.#http
@@ -64,7 +74,9 @@ export class ReservationService {
   }
 
   list(): Observable<Reservation[]> {
-    return this.#http.get<Reservation[]>(`${environment.apiUrl}/reservations`);
+    return this.#http
+      .get<PaginatedReservations>(this.#listCacheKey)
+      .pipe(map((response) => response.items));
   }
 
   cancel(id: number): Observable<unknown> {

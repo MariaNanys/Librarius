@@ -25,6 +25,7 @@ export class BookDetailsComponent implements OnInit, OnDestroy {
   libraries: any = null;
   isLoading = true;
   isExpanded = false;
+  isLibrarian = this.authService.isLibrarian;
 
   popupOpen = false;
   selectedLibraryId: number | null = null;
@@ -51,6 +52,18 @@ export class BookDetailsComponent implements OnInit, OnDestroy {
   get selectedLibrary(): any {
     if (this.selectedLibraryId === null || !this.libraries) return null;
     return this.libraries.find((l: any) => l.id === this.selectedLibraryId) ?? null;
+  }
+
+  get librarianAvailability(): { available: boolean; label: string } | null {
+    if (!this.isLibrarian() || !this.libraries) return null;
+    const user = this.authService.currentUser();
+    if (!user?.library_id) return null;
+    const myLib = this.libraries.find((l: any) => l.id === user.library_id);
+    if (!myLib) return null;
+    return {
+      available: myLib.is_available,
+      label: myLib.is_available ? 'Dostępna' : 'Niedostępna',
+    };
   }
 
   ngOnInit(): void {
