@@ -16,6 +16,16 @@ export class LibrarianDashboardComponent implements OnInit {
   loadError = signal<string>('');
   expandedId = signal<number | null>(null);
 
+  acceptPopupOpen = signal<boolean>(false);
+  reservationToAccept = signal<Reservation | null>(null);
+  isAccepting = signal<boolean>(false);
+  acceptError = signal<string>('');
+
+  rejectPopupOpen = signal<boolean>(false);
+  reservationToReject = signal<Reservation | null>(null);
+  isRejecting = signal<boolean>(false);
+  rejectError = signal<string>('');
+
   private readonly endedStatuses = ['closed', 'rejected', 'cancelled', 'expired'];
 
   pendingCount = computed(
@@ -35,6 +45,10 @@ export class LibrarianDashboardComponent implements OnInit {
   );
 
   ngOnInit(): void {
+    this.loadReservations();
+  }
+
+  loadReservations(): void {
     this.reservationService.list().subscribe({
       next: (data) => {
         this.reservations.set(data ?? []);
@@ -52,12 +66,91 @@ export class LibrarianDashboardComponent implements OnInit {
     this.expandedId.update((current) => (current === id ? null : id));
   }
 
+  isPending(status: string): boolean {
+    return status === 'pending';
+  }
+
+  openAcceptPopup(reservation: Reservation): void {
+    this.reservationToAccept.set(reservation);
+    this.acceptError.set('');
+    this.acceptPopupOpen.set(true);
+  }
+
+  closeAcceptPopup(): void {
+    this.acceptPopupOpen.set(false);
+    this.reservationToAccept.set(null);
+    this.isAccepting.set(false);
+    this.acceptError.set('');
+  }
+
+  confirmAccept(): void {
+    const reservation = this.reservationToAccept();
+    if (!reservation) return;
+
+    this.isAccepting.set(true);
+    this.acceptError.set('');
+    this.reservationService.accept(reservation.id).subscribe({
+      next: () => {
+        this.closeAcceptPopup();
+        this.loadReservations();
+      },
+      error: (err) => {
+        console.error('Błąd potwierdzania:', err);
+        this.acceptError.set(err?.error?.detail || 'Nie udało się potwierdzić rezerwacji.');
+        this.isAccepting.set(false);
+      },
+    });
+  }
+
+  openRejectPopup(reservation: Reservation): void {
+    this.reservationToReject.set(reservation);
+    this.rejectError.set('');
+    this.rejectPopupOpen.set(true);
+  }
+
+  closeRejectPopup(): void {
+    this.rejectPopupOpen.set(false);
+    this.reservationToReject.set(null);
+    this.isRejecting.set(false);
+    this.rejectError.set('');
+  }
+
+  confirmReject(): void {
+    const reservation = this.reservationToReject();
+    if (!reservation) return;
+
+    this.isRejecting.set(true);
+    this.rejectError.set('');
+    this.reservationService.reject(reservation.id).subscribe({
+      next: () => {
+        this.closeRejectPopup();
+        this.loadReservations();
+      },
+      error: (err) => {
+        console.error('Błąd anulowania:', err);
+        this.rejectError.set(err?.error?.detail || 'Nie udało się anulować rezerwacji.');
+        this.isRejecting.set(false);
+      },
+    });
+  }
+
   formatDate(dt: string | null): string {
     if (!dt) return '-';
     const d = new Date(dt);
     const dd = String(d.getDate()).padStart(2, '0');
     const mm = String(d.getMonth() + 1).padStart(2, '0');
     return `${dd}.${mm}.${d.getFullYear()}`;
+  }
+
+  endTimeDisplay(r: Reservation): string {
+    if (r.status.name === 'pending') return '-';
+    return this.formatDate(r.planned_end_time ?? r.end_time ?? r.updated_at);
+  }
+
+  pickupDeadline(): string {
+    const deadline = new Date();
+    deadline.setHours(deadline.getHours() + 72);
+    return this.formatDate(deadline.toISOString());
   }
 
   authorsLabel(r: Reservation): string {

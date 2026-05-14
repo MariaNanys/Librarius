@@ -166,7 +166,7 @@
         <div class="modal-row"><span class="modal-label">Adres e-mail:</span><span>{{ r.reader?.email || '-' }}</span></div>
         <div class="modal-row"><span class="modal-label">ISBN:</span><span>{{ r.book.isbn || '-' }}</span></div>
         <div class="modal-row"><span class="modal-label">Data rezerwacji:</span><span>{{ formatDate(r.start_time) }}</span></div>
-        <div class="modal-row"><span class="modal-label">Koniec rezerwacji:</span><span>-</span></div>
+        <div class="modal-row"><span class="modal-label">Koniec rezerwacji:</span><span>{{ pickupDeadline() }}</span></div>
       </div>
       @if (acceptError()) {
         <p class="error">{{ acceptError() }}</p>
@@ -195,7 +195,7 @@
       }
       <div class="modal-actions">
         <button type="button" class="btn btn-outline" (click)="closeRejectPopup()" [disabled]="isRejecting()">Powrót</button>
-        <button type="button" class="btn btn-danger" (click)="confirmReject()" [disabled]="isRejecting()">Anuluj</button>
+        <button type="button" class="btn btn-danger" (click)="confirmReject()" [disabled]="isRejecting()">Potwierdź anulowanie</button>
       </div>
     </div>
   </div>
