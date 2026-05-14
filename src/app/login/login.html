@@ -21,4 +21,7 @@
     }
   </label>
   <button class="btn" type="submit" [disabled]="loginForm().invalid()">Zaloguj się</button>
+  @if (submitError()) {
+    <p class="error">{{ submitError() }}</p>
+  }
 </form>

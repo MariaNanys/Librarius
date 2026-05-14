@@ -41,6 +41,9 @@
     }
   }
   <button class="btn" type="submit" [disabled]="registrationForm().invalid()">Zarejestruj się</button>
+  @if (submitError()) {
+    <p class="error">{{ submitError() }}</p>
+  }
 </form>
 }
 @if (formSubmitted()) {
