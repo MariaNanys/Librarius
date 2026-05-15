@@ -7,7 +7,7 @@
       @if (isEditing()) {
         <input type="text" [formField]="editForm.first_name" placeholder="Imię" />
         @if (editForm.first_name().touched() && editForm.first_name().errors(); as errors) {
-          @for (error of errors; track error) {
+          @for (error of errors; track error.kind) {
             <p class="error">{{ error.message }}</p>
           }
         }
@@ -21,7 +21,7 @@
       @if (isEditing()) {
         <input type="text" [formField]="editForm.last_name" placeholder="Nazwisko" />
         @if (editForm.last_name().touched() && editForm.last_name().errors(); as errors) {
-          @for (error of errors; track error) {
+          @for (error of errors; track error.kind) {
             <p class="error">{{ error.message }}</p>
           }
         }
@@ -62,7 +62,7 @@
           readonly 
         />
         @if (editForm.email().touched() && editForm.email().errors(); as errors) {
-          @for (error of errors; track error) {
+          @for (error of errors; track error.kind) {
             <p class="error">{{ error.message }}</p>
           }
         }
