@@ -51,6 +51,5 @@ export class App {
   logout() {
     this.closeDropdown();
     this.authService.logout();
-    this.router.navigate(['/']);
   }
 }

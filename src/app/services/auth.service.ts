@@ -5,6 +5,7 @@ import { Observable } from "rxjs";
 import { jwtDecode } from "jwt-decode";
 import { tap } from 'rxjs/operators';
 import { Router } from "@angular/router";
+import { CacheService } from "./cache.service";
 
 export interface User {
   sub: number;
@@ -21,7 +22,8 @@ export interface User {
 })
 export class AuthService {
   #http: HttpClient = inject(HttpClient);
-  private router = inject(Router);
+  #cache = inject(CacheService);
+  #router = inject(Router);
 
   constructor() {
     this.checkSessionTimeout();
@@ -60,13 +62,13 @@ export class AuthService {
   logout() {
     const token = localStorage.getItem('token');
     this.currentUser.set(null);
+    this.#cache.clear();
+    localStorage.removeItem('token');
+    localStorage.removeItem('login_timestamp');
+    this.#router.navigate(['/login']);
     if (token) {
-      this.#http.post(`${environment.apiUrl}/auth/logout`, { token }).subscribe(()=> {
-        this.router.navigate(['/login']);
-        localStorage.removeItem('token');
-        localStorage.removeItem('login_timestamp');
-      });
-    } 
+      this.#http.post(`${environment.apiUrl}/auth/logout`, { token }).subscribe();
+    }
   }
 
   register(data: any): Observable<any> {
