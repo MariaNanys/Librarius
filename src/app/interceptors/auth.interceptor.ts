@@ -1,22 +1,31 @@
-import { HttpInterceptorFn } from '@angular/common/http';
+import { HttpErrorResponse, HttpInterceptorFn, HttpRequest } from '@angular/common/http';
 import { inject } from '@angular/core';
 import { AuthService } from '../services/auth.service';
-import { EMPTY } from 'rxjs';
+import { catchError, EMPTY, throwError } from 'rxjs';
 
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
   const authService = inject(AuthService);
   authService.checkSessionTimeout();
   const token = localStorage.getItem('token');
 
-  if (token) {
+  const forward = (request: HttpRequest<unknown>) =>
+    next(request).pipe(
+      catchError((err: HttpErrorResponse) => {
+        if (err.status === 401 && authService.isLoggedIn() && !request.url.includes('/auth/')) {
+          authService.logout();
+        }
+        return throwError(() => err);
+      })
+    );
 
+  if (token) {
     const clonedRequest = req.clone({
       setHeaders: {
         Authorization: `Bearer ${token}`
       }
     });
 
-    return next(clonedRequest);
+    return forward(clonedRequest);
   }
   const loginTime = localStorage.getItem('login_timestamp');
   const oneDayInMs = 24 * 60 * 60 * 1000;
@@ -27,5 +36,5 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
       authService.logout();
       return EMPTY;
   }}
-  return next(req);
+  return forward(req);
 };
