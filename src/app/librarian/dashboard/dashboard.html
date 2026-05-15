@@ -98,6 +98,13 @@
                     <p class="detail-label">ISBN</p>
                     <p class="detail-value">{{ r.book.isbn || '-' }}</p>
                   </div>
+                  <div class="detail-block">
+                    <h4>DANE BIBLIOTEKI</h4>
+                    <p class="detail-label">Nazwa</p>
+                    <p class="detail-value">{{ r.library.name }}</p>
+                    <p class="detail-label">Miasto</p>
+                    <p class="detail-value">{{ r.library.city || '-' }}</p>
+                  </div>
                 </div>
               </td>
             </tr>
