@@ -75,6 +75,14 @@ export class AuthService {
     return this.#http.post(environment.apiUrl + '/auth/register', data);
   }
 
+  requestPasswordReset(email: string): Observable<any> {
+    return this.#http.post(environment.apiUrl + '/auth/password-reset/request', { email });
+  }
+
+  confirmPasswordReset(uid: string, token: string, new_password: string): Observable<any> {
+    return this.#http.post(environment.apiUrl + '/auth/password-reset/confirm', { uid, token, new_password });
+  }
+
   login(credentials: any) {
     return this.#http.post<any>(`${environment.apiUrl}/auth/login`, credentials).pipe(
       tap((response: any) => {
