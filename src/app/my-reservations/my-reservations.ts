@@ -205,7 +205,7 @@ export class MyReservationsComponent implements OnInit, OnDestroy {
       },
       error: (err) => {
         console.error('Błąd anulowania:', err);
-        this.cancelError.set(err?.error?.detail || 'Nie udało się anulować rezerwacji.');
+        this.cancelError.set('Nie udało się anulować rezerwacji.');
         this.isCancelling.set(false);
       },
     });

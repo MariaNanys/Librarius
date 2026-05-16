@@ -158,7 +158,7 @@ export class BookDetailsComponent implements OnInit, OnDestroy {
       },
       error: (err) => {
         console.error('Błąd rezerwacji:', err);
-        this.saveError = err?.error?.detail || 'Nie udało się utworzyć rezerwacji.';
+        this.saveError = 'Nie udało się utworzyć rezerwacji.';
         this.isSaving = false;
         this.cdr.detectChanges();
       }

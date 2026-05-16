@@ -209,7 +209,7 @@ export class LibrarianReservationsComponent implements OnInit {
       },
       error: (err) => {
         console.error('Błąd potwierdzania:', err);
-        this.acceptError.set(err?.error?.detail || 'Nie udało się potwierdzić rezerwacji.');
+        this.acceptError.set('Nie udało się potwierdzić rezerwacji.');
         this.isAccepting.set(false);
       },
     });
@@ -243,7 +243,7 @@ export class LibrarianReservationsComponent implements OnInit {
       },
       error: (err) => {
         console.error('Błąd anulowania:', err);
-        this.rejectError.set(err?.error?.detail || 'Nie udało się anulować rezerwacji.');
+        this.rejectError.set('Nie udało się odrzucić rezerwacji.');
         this.isRejecting.set(false);
       },
     });
