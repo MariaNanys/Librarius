@@ -19,6 +19,7 @@ export class LoginComponent {
     login: '',
     password: '',
   });
+  submitError = signal<string | null>(null);
 
   loginForm = form(this.loginModel, (schemaPath) => {
     required(schemaPath.login, { message: 'E-mail jest wymagany' });
@@ -32,6 +33,7 @@ export class LoginComponent {
     event.preventDefault();
     submit(this.loginForm, {
       action: async () => {
+        this.submitError.set(null);
         const credentials = this.loginModel();
         try {
           const result: any = await firstValueFrom(this.authService.login(credentials));
@@ -39,7 +41,8 @@ export class LoginComponent {
           this.authService.setUserToStorage(result.token);
           const target = this.authService.isLibrarian() ? '/librarian' : '/';
           await this.router.navigate([target]);
-        } catch (error) {
+        } catch (error: any) {
+          this.submitError.set(error?.status === 401 ? 'Hasło lub e-mail jest nieprawidłowe.' : 'Wystąpił błąd. Spróbuj ponownie.');
           console.error('Błąd logowania lub pobierania profilu:', error);
         }
       },

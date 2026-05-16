@@ -19,7 +19,7 @@
     <input type="email" [formField]="registrationForm.email" placeholder="E-mail" />
   </label>
   @if (registrationForm.email().touched() && registrationForm.email().errors(); as errors) {
-    @for (error of errors; track error) {
+    @for (error of errors; track error.kind) {
       <p class="error">{{ error.message }}</p>
     }
   }
@@ -41,6 +41,9 @@
     }
   }
   <button class="btn" type="submit" [disabled]="registrationForm().invalid()">Zarejestruj się</button>
+  @if (submitError()) {
+    <p class="error">{{ submitError() }}</p>
+  }
 </form>
 }
 @if (formSubmitted()) {

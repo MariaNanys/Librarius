@@ -4,7 +4,7 @@
     <input type="text" [formField]="loginForm.login" placeholder="e-mail" />
     @if (loginForm.login().touched() && loginForm.login().errors(); as errors) {
       <div class="error">
-        @for (error of errors; track error) {
+        @for (error of errors; track error.kind) {
           <p>{{ error.message }}</p>
         }
       </div>
@@ -14,11 +14,14 @@
     <input type="password" [formField]="loginForm.password" placeholder="hasło" />
     @if (loginForm.password().touched() && loginForm.password().errors(); as errors) {
       <div class="error">
-        @for (error of errors; track error) {
+        @for (error of errors; track error.kind) {
           <p>{{ error.message }}</p>
         }
       </div>
     }
   </label>
   <button class="btn" type="submit" [disabled]="loginForm().invalid()">Zaloguj się</button>
+  @if (submitError()) {
+    <p class="error">{{ submitError() }}</p>
+  }
 </form>

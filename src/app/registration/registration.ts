@@ -39,6 +39,7 @@ export class RegistrationComponent {
 ];
 
     formSubmitted = signal(false);
+    submitError = signal<string | null>(null);
     private _registrationForm = form(this.registrationModel, (schemaPath) => {
         required(schemaPath.first_name, { message: 'Imię jest wymagane' });
         required(schemaPath.last_name, { message: 'Nazwisko jest wymagane' });
@@ -90,12 +91,14 @@ export class RegistrationComponent {
                 region: regionId
             };
 
+            this.submitError.set(null);
             this.authService.register(payloadToSend).subscribe({
                 next: (result) => {
                     this.formSubmitted.set(true);
                 },
                 error: (err) => {
                     console.error('Błąd z serwera:', err);
+                    this.submitError.set(err?.status === 409 ? 'Użytkownik o tym adresie e-mail już istnieje.' : 'Wystąpił błąd. Spróbuj ponownie.');
                 }
             });
         },

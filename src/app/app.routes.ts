@@ -12,17 +12,19 @@ import { LibrarianDashboardComponent } from './librarian/dashboard/dashboard';
 import { LibrarianReservationsComponent } from './librarian/reservations/reservations';
 import { LibrarianReadersComponent } from './librarian/readers/readers';
 import { librarianGuard } from './guards/librarian.guard';
+import { authGuard } from './guards/auth.guard';
+import { guestGuard } from './guards/guest.guard';
 
 export const routes: Routes = [
     { path: '', component: HomeComponent },
-    { path: 'login', component: LoginComponent },
-    { path: 'register', component: RegistrationComponent },
+    { path: 'login', component: LoginComponent, canActivate: [guestGuard] },
+    { path: 'register', component: RegistrationComponent, canActivate: [guestGuard] },
     { path: 'register-success', component: RegisterSuccessComponent },
     { path: 'search', component: SearchResultsComponent },
     { path: 'advanced-search', component: AdvanceSearchComponent },
     { path: 'book/:id', component: BookDetailsComponent },
-    { path: 'profile', component: UserProfileComponent },
-    { path: 'reservations', component: MyReservationsComponent },
+    { path: 'profile', component: UserProfileComponent, canActivate: [authGuard] },
+    { path: 'reservations', component: MyReservationsComponent, canActivate: [authGuard] },
     {
         path: 'librarian',
         canActivate: [librarianGuard],

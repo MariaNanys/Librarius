@@ -112,6 +112,13 @@
                   <p class="detail-label">ISBN</p>
                   <p class="detail-value">{{ r.book.isbn || '-' }}</p>
                 </div>
+                <div class="detail-block">
+                  <h4>DANE BIBLIOTEKI</h4>
+                  <p class="detail-label">Nazwa</p>
+                  <p class="detail-value">{{ r.library.name }}</p>
+                  <p class="detail-label">Miasto</p>
+                  <p class="detail-value">{{ r.library.city || '-' }}</p>
+                </div>
               </div>
             </td>
           </tr>
@@ -166,7 +173,7 @@
         <div class="modal-row"><span class="modal-label">Adres e-mail:</span><span>{{ r.reader?.email || '-' }}</span></div>
         <div class="modal-row"><span class="modal-label">ISBN:</span><span>{{ r.book.isbn || '-' }}</span></div>
         <div class="modal-row"><span class="modal-label">Data rezerwacji:</span><span>{{ formatDate(r.start_time) }}</span></div>
-        <div class="modal-row"><span class="modal-label">Koniec rezerwacji:</span><span>-</span></div>
+        <div class="modal-row"><span class="modal-label">Koniec rezerwacji:</span><span>{{ pickupDeadline() }}</span></div>
       </div>
       @if (acceptError()) {
         <p class="error">{{ acceptError() }}</p>
@@ -195,7 +202,7 @@
       }
       <div class="modal-actions">
         <button type="button" class="btn btn-outline" (click)="closeRejectPopup()" [disabled]="isRejecting()">Powrót</button>
-        <button type="button" class="btn btn-danger" (click)="confirmReject()" [disabled]="isRejecting()">Anuluj</button>
+        <button type="button" class="btn btn-danger" (click)="confirmReject()" [disabled]="isRejecting()">Potwierdź anulowanie</button>
       </div>
     </div>
   </div>
