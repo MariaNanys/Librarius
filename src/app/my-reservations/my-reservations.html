@@ -1,6 +1,5 @@
-<div class="page-container">
-
 <h1 class="page-title">Moje rezerwacje</h1>
+<div class="page-container">
 
 <div class="search-bar">
   <span class="search-icon">
@@ -87,11 +86,10 @@
       (click)="changePage(currentPage() - 1)"
       [disabled]="currentPage() === 1"
     >
-      <span class="arrow">&laquo;</span> Poprzednia
+      <span class="arrow">&laquo;</span>
     </button>
 
     <div class="page-counter">
-      Strona
       @if (!isEditingPage()) {
         <strong (click)="toggleEditPage()" title="Kliknij, aby wpisać numer strony">
           {{ currentPage() }}
@@ -115,7 +113,7 @@
       (click)="changePage(currentPage() + 1)"
       [disabled]="currentPage() === totalPages()"
     >
-      Następna <span class="arrow">&raquo;</span>
+      <span class="arrow">&raquo;</span>
     </button>
   </div>
 }
@@ -125,6 +123,7 @@
 @if (successPopupOpen()) {
   <div class="popup-overlay">
     <div class="popup-card popup-card-small">
+      <h2 class="popup-success-title">Sukces!</h2>
       <p class="popup-message">Rezerwacja anulowana pomyślnie.</p>
     </div>
   </div>

@@ -4,157 +4,167 @@
   <p class="error">{{ loadError() }}</p>
 } @else {
   <div class="stat-row">
-    <a class="stat-card" routerLink="/librarian/reservations" [queryParams]="{filter: 'pending'}">
+    <a class="stat-card stat-pending" routerLink="/librarian/reservations" [queryParams]="{filter: 'pending'}">
       <div class="stat-label">Oczekujące rezerwacje</div>
       <div class="stat-value">{{ pendingCount() }}</div>
     </a>
-    <a class="stat-card" routerLink="/librarian/reservations" [queryParams]="{filter: 'accepted'}">
+    <a class="stat-card stat-accepted" routerLink="/librarian/reservations" [queryParams]="{filter: 'accepted'}">
       <div class="stat-label">Potwierdzone rezerwacje</div>
       <div class="stat-value">{{ acceptedCount() }}</div>
     </a>
-    <a class="stat-card" routerLink="/librarian/reservations" [queryParams]="{filter: 'ended'}">
+    <a class="stat-card stat-ended" routerLink="/librarian/reservations" [queryParams]="{filter: 'ended'}">
       <div class="stat-label">Zakończone rezerwacje</div>
       <div class="stat-value">{{ endedCount() }}</div>
     </a>
   </div>
+  <div class="reservations-pending">
+    <h2 class="section-title">Oczekujące rezerwacje</h2>
 
-  <h2 class="section-title">Oczekujące rezerwacje</h2>
-
-  @if (pendingReservations().length === 0) {
-    <p class="empty">Brak oczekujących rezerwacji.</p>
-  } @else {
-    <table class="reservations-table">
-      <thead>
-        <tr>
-          <th class="col-toggle"></th>
-          <th>Nr</th>
-          <th>ISBN</th>
-          <th>Data rezerwacji</th>
-          <th>Koniec rezerwacji</th>
-          <th>Status</th>
-          <th class="col-actions"></th>
-        </tr>
-      </thead>
-      <tbody>
-        @for (r of pendingReservations(); track r.id) {
-          <tr class="row-main" [class.expanded]="expandedId() === r.id">
-            <td class="col-toggle">
-              <button
-                type="button"
-                class="toggle"
-                [class.open]="expandedId() === r.id"
-                (click)="toggleExpand(r.id)"
-                [attr.aria-label]="expandedId() === r.id ? 'Zwiń' : 'Rozwiń'">
-                ▶
-              </button>
-            </td>
-            <td>{{ r.id }}</td>
-            <td>{{ r.book.isbn || '-' }}</td>
-            <td>{{ formatDate(r.start_time) }}</td>
-            <td>{{ endTimeDisplay(r) }}</td>
-            <td>
-              <span class="status-badge status-pending">Oczekująca</span>
-            </td>
-            <td class="col-actions">
-              <button type="button"
-                      class="action-btn action-accept"
-                      [disabled]="!isPending(r.status.name)"
-                      (click)="openAcceptPopup(r)"
-                      aria-label="Potwierdź">
-                <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <polyline points="2,7 6,11 12,3" />
-                </svg>
-              </button>
-              <button type="button"
-                      class="action-btn action-reject"
-                      [disabled]="!isPending(r.status.name)"
-                      (click)="openRejectPopup(r)"
-                      aria-label="Anuluj">
-                <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <line x1="3" y1="3" x2="11" y2="11" />
-                  <line x1="11" y1="3" x2="3" y2="11" />
-                </svg>
-              </button>
-            </td>
+    @if (pendingReservations().length === 0) {
+      <p class="empty">Brak oczekujących rezerwacji.</p>
+    } @else {
+      <table class="reservations-table">
+        <thead>
+          <tr>
+            <th class="col-toggle"></th>
+            <th>Nr</th>
+            <th>ISBN</th>
+            <th>Data rezerwacji</th>
+            <th>Koniec rezerwacji</th>
+            <th>Status</th>
+            <th class="col-actions"></th>
           </tr>
-          @if (expandedId() === r.id) {
-            <tr class="row-detail">
-              <td></td>
-              <td colspan="6">
-                <div class="detail-grid">
-                  <div class="detail-block">
-                    <h4>DANE REZERWUJĄCEGO</h4>
-                    <p class="detail-label">Imię i nazwisko</p>
-                    <p class="detail-value">{{ readerName(r) }}</p>
-                    <p class="detail-label">Adres e-mail</p>
-                    <p class="detail-value">{{ r.reader?.email || '-' }}</p>
-                  </div>
-                  <div class="detail-block">
-                    <h4>DANE O KSIĄŻCE</h4>
-                    <p class="detail-label">Tytuł książki</p>
-                    <p class="detail-value">{{ r.book.title }}</p>
-                    <p class="detail-label">Autor książki</p>
-                    <p class="detail-value">{{ authorsLabel(r) }}</p>
-                    <p class="detail-label">ISBN</p>
-                    <p class="detail-value">{{ r.book.isbn || '-' }}</p>
-                  </div>
-                  <div class="detail-block">
-                    <h4>DANE BIBLIOTEKI</h4>
-                    <p class="detail-label">Nazwa</p>
-                    <p class="detail-value">{{ r.library.name }}</p>
-                    <p class="detail-label">Miasto</p>
-                    <p class="detail-value">{{ r.library.city || '-' }}</p>
-                  </div>
-                </div>
+        </thead>
+        <tbody>
+          @for (r of pendingReservations(); track r.id) {
+            <tr class="row-main" [class.expanded]="expandedId() === r.id">
+              <td class="col-toggle">
+                <button
+                  type="button"
+                  class="toggle"
+                  [class.open]="expandedId() === r.id"
+                  (click)="toggleExpand(r.id)"
+                  [attr.aria-label]="expandedId() === r.id ? 'Zwiń' : 'Rozwiń'">
+                  ▶
+                </button>
+              </td>
+              <td>{{ r.id }}</td>
+              <td>{{ r.book.isbn || '-' }}</td>
+              <td>{{ formatDate(r.start_time) }}</td>
+              <td>{{ endTimeDisplay(r) }}</td>
+              <td>
+                <span class="status-badge status-pending">Oczekująca</span>
+              </td>
+              <td class="col-actions">
+                <button type="button"
+                        class="action-btn action-accept"
+                        [disabled]="!isPending(r.status.name)"
+                        (click)="openAcceptPopup(r)"
+                        aria-label="Potwierdź">
+                  <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="2,7 6,11 12,3" />
+                  </svg>
+                </button>
+                <button type="button"
+                        class="action-btn action-reject"
+                        [disabled]="!isPending(r.status.name)"
+                        (click)="openRejectPopup(r)"
+                        aria-label="Anuluj">
+                  <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="3" y1="3" x2="11" y2="11" />
+                    <line x1="11" y1="3" x2="3" y2="11" />
+                  </svg>
+                </button>
               </td>
             </tr>
+            @if (expandedId() === r.id) {
+              <tr class="row-detail">
+                <td></td>
+                <td colspan="6">
+                  <div class="detail-grid">
+                    <div class="detail-block">
+                      <h4>DANE REZERWUJĄCEGO</h4>
+                      <p class="detail-label">Imię i nazwisko</p>
+                      <p class="detail-value">{{ readerName(r) }}</p>
+                      <p class="detail-label">Adres e-mail</p>
+                      <p class="detail-value">{{ r.reader?.email || '-' }}</p>
+                    </div>
+                    <div class="detail-block">
+                      <h4>DANE O KSIĄŻCE</h4>
+                      <p class="detail-label">Tytuł książki</p>
+                      <p class="detail-value">{{ r.book.title }}</p>
+                      <p class="detail-label">Autor książki</p>
+                      <p class="detail-value">{{ authorsLabel(r) }}</p>
+                      <p class="detail-label">ISBN</p>
+                      <p class="detail-value">{{ r.book.isbn || '-' }}</p>
+                    </div>
+                    <div class="detail-block">
+                      <h4>DANE BIBLIOTEKI</h4>
+                      <p class="detail-label">Nazwa</p>
+                      <p class="detail-value">{{ r.library.name }}</p>
+                      <p class="detail-label">Miasto</p>
+                      <p class="detail-value">{{ r.library.city || '-' }}</p>
+                    </div>
+                  </div>
+                </td>
+              </tr>
+            }
           }
-        }
-      </tbody>
-    </table>
-  }
+        </tbody>
+      </table>
+    }
+  </div>
+}
+
+@if (successPopupOpen()) {
+  <div class="popup-overlay">
+    <div class="popup-card popup-card-small">
+      <h2 class="popup-success-title">Sukces!</h2>
+      <p class="popup-message">{{ successMessage() }}</p>
+    </div>
+  </div>
 }
 
 @if (acceptPopupOpen() && reservationToAccept(); as r) {
-  <div class="modal-backdrop" (click)="closeAcceptPopup()">
-    <div class="modal" (click)="$event.stopPropagation()">
-      <h2 class="modal-title">Potwierdź rezerwację</h2>
-      <div class="modal-fields">
-        <div class="modal-row"><span class="modal-label">Nr rezerwacji:</span><span>{{ r.id }}</span></div>
-        <div class="modal-row"><span class="modal-label">Imię i nazwisko:</span><span>{{ readerName(r) }}</span></div>
-        <div class="modal-row"><span class="modal-label">Adres e-mail:</span><span>{{ r.reader?.email || '-' }}</span></div>
-        <div class="modal-row"><span class="modal-label">ISBN:</span><span>{{ r.book.isbn || '-' }}</span></div>
-        <div class="modal-row"><span class="modal-label">Data rezerwacji:</span><span>{{ formatDate(r.start_time) }}</span></div>
-        <div class="modal-row"><span class="modal-label">Koniec rezerwacji:</span><span>{{ pickupDeadline() }}</span></div>
+  <div class="popup-overlay" (click)="closeAcceptPopup()">
+    <div class="popup-card" (click)="$event.stopPropagation()">
+      <h2 class="popup-title confirm">Potwierdź rezerwację</h2>
+      <div class="popup-info">
+        <div class="popup-row"><span class="popup-label">Nr rezerwacji:</span><span class="popup-value">{{ r.id }}</span></div>
+        <div class="popup-row"><span class="popup-label">Imię i nazwisko:</span><span class="popup-value">{{ readerName(r) }}</span></div>
+        <div class="popup-row"><span class="popup-label">Adres e-mail:</span><span class="popup-value">{{ r.reader?.email || '-' }}</span></div>
+        <div class="popup-row"><span class="popup-label">ISBN:</span><span class="popup-value">{{ r.book.isbn || '-' }}</span></div>
+        <div class="popup-row"><span class="popup-label">Data rezerwacji:</span><span class="popup-value">{{ formatDate(r.start_time) }}</span></div>
+        <div class="popup-row"><span class="popup-label">Koniec rezerwacji:</span><span class="popup-value">{{ pickupDeadline() }}</span></div>
       </div>
       @if (acceptError()) {
-        <p class="error">{{ acceptError() }}</p>
+        <p class="popup-error">{{ acceptError() }}</p>
       }
-      <div class="modal-actions">
-        <button type="button" class="btn btn-outline" (click)="closeAcceptPopup()" [disabled]="isAccepting()">Powrót</button>
-        <button type="button" class="btn btn-primary" (click)="confirmAccept()" [disabled]="isAccepting()">Potwierdź</button>
+      <div class="popup-actions">
+        <button type="button" class="btn-back" (click)="closeAcceptPopup()" [disabled]="isAccepting()">Powrót</button>
+        <button type="button" class="btn-confirm" (click)="confirmAccept()" [disabled]="isAccepting()">Potwierdź</button>
       </div>
     </div>
   </div>
 }
 
 @if (rejectPopupOpen() && reservationToReject(); as r) {
-  <div class="modal-backdrop" (click)="closeRejectPopup()">
-    <div class="modal" (click)="$event.stopPropagation()">
-      <h2 class="modal-title">Czy na pewno chcesz anulować rezerwację?</h2>
-      <div class="modal-fields">
-        <div class="modal-row"><span class="modal-label">Nr rezerwacji:</span><span>{{ r.id }}</span></div>
-        <div class="modal-row"><span class="modal-label">Imię i nazwisko:</span><span>{{ readerName(r) }}</span></div>
-        <div class="modal-row"><span class="modal-label">Adres e-mail:</span><span>{{ r.reader?.email || '-' }}</span></div>
-        <div class="modal-row"><span class="modal-label">ISBN:</span><span>{{ r.book.isbn || '-' }}</span></div>
-        <div class="modal-row"><span class="modal-label">Data rezerwacji:</span><span>{{ formatDate(r.start_time) }}</span></div>
+  <div class="popup-overlay" (click)="closeRejectPopup()">
+    <div class="popup-card" (click)="$event.stopPropagation()">
+      <h2 class="popup-title">Anuluj rezerwację</h2>
+      <div class="popup-info">
+        <div class="popup-row"><span class="popup-label">Nr rezerwacji:</span><span class="popup-value">{{ r.id }}</span></div>
+        <div class="popup-row"><span class="popup-label">Imię i nazwisko:</span><span class="popup-value">{{ readerName(r) }}</span></div>
+        <div class="popup-row"><span class="popup-label">Adres e-mail:</span><span class="popup-value">{{ r.reader?.email || '-' }}</span></div>
+        <div class="popup-row"><span class="popup-label">ISBN:</span><span class="popup-value">{{ r.book.isbn || '-' }}</span></div>
+        <div class="popup-row"><span class="popup-label">Data rezerwacji:</span><span class="popup-value">{{ formatDate(r.start_time) }}</span></div>
       </div>
       @if (rejectError()) {
-        <p class="error">{{ rejectError() }}</p>
+        <p class="popup-error">{{ rejectError() }}</p>
       }
-      <div class="modal-actions">
-        <button type="button" class="btn btn-outline" (click)="closeRejectPopup()" [disabled]="isRejecting()">Powrót</button>
-        <button type="button" class="btn btn-danger" (click)="confirmReject()" [disabled]="isRejecting()">Potwierdź anulowanie</button>
+      <div class="popup-actions">
+        <button type="button" class="btn-back" (click)="closeRejectPopup()" [disabled]="isRejecting()">Powrót</button>
+        <button type="button" class="btn-cancel-confirm" (click)="confirmReject()" [disabled]="isRejecting()">Potwierdź anulowanie</button>
       </div>
     </div>
   </div>

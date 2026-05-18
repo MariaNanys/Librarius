@@ -44,9 +44,18 @@ export class SearchResultsComponent implements OnInit {
   }
 
   searchQuery = signal<string>('');
+  languageMap = signal<Record<string, string>>({});
 
   ngOnInit() {
-    // this.bookService.currentPage.set(1);
+    this.searchAdvanceService.getLanguages().subscribe({
+      next: data => {
+        const map: Record<string, string> = {};
+        data.forEach(l => map[l.code] = l.display);
+        this.languageMap.set(map);
+      },
+      error: err => console.error(err)
+    });
+
     this.route.queryParams.subscribe(params => {
       const currentPage = params['page'] ? Number(params['page']) : 1;
 
@@ -117,5 +126,10 @@ export class SearchResultsComponent implements OnInit {
 
   getCover(url: string | null | undefined): string {
     return url ? url : '/assets/book_1.webp';
+  }
+
+  getLanguageDisplay(code: string | null | undefined): string {
+    if (!code) return 'Brak danych';
+    return this.languageMap()[code.toLowerCase()] || code.toUpperCase();
   }
 }

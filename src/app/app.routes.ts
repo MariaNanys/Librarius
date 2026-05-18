@@ -2,6 +2,8 @@ import { Routes } from '@angular/router';
 import { HomeComponent } from './home/home';
 import { LoginComponent } from './login/login';
 import { RegistrationComponent } from './registration/registration';
+import { ForgotPasswordComponent } from './forgot-password/forgot-password';
+import { ResetPasswordComponent } from './reset-password/reset-password';
 import { AdvanceSearchComponent } from './advanced-search/advanced_search';
 import { RegisterSuccessComponent } from './register-succes/register_success';
 import { BookDetailsComponent } from './book-details/book_details';
@@ -20,6 +22,8 @@ export const routes: Routes = [
     { path: 'login', component: LoginComponent, canActivate: [guestGuard] },
     { path: 'register', component: RegistrationComponent, canActivate: [guestGuard] },
     { path: 'register-success', component: RegisterSuccessComponent },
+    { path: 'forgot-password', component: ForgotPasswordComponent, canActivate: [guestGuard] },
+    { path: 'reset-password', component: ResetPasswordComponent },
     { path: 'search', component: SearchResultsComponent },
     { path: 'advanced-search', component: AdvanceSearchComponent },
     { path: 'book/:id', component: BookDetailsComponent },

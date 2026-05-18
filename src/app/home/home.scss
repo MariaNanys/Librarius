@@ -1,46 +1,65 @@
 .search-section {
-    margin-top: 70px;
     width: 100%;
-    height: 50px;
+    margin: 50px auto 25px ;
     display: flex;
-    justify-content: center;
+    justify-content: space-around;
     
     .search-input {
-        width: 80%;position: relative;
+        width: 90%;
+        position: relative;
     }
     .search-icon {
-        width: 32px;
-        height: 32px;
+        width: auto;
+        height: 20px;
         position: absolute;
-        top: 10px;
+        top: 9px;
         left: 10px;
     }
     input {
         width: 100%;
-        height: 50px;
-        box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        height: 48px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
         border: none;
         border-radius: 25px;
-        padding-left: 45px;
+        padding-left: 50px;
+        font-size: 12px;
+        box-sizing: border-box;
+
+        &:focus {
+            outline: none;
+        }
     }
 }
-.section-header {
-    display: flex;
-    height: 30px;
-    justify-content: space-between;
-    align-items: center;
-    margin-top: 50px;
+
+.recommendations {
+  width: 90%;
+  margin: 0 auto;
+
+  p {
+    color: #9e9e9e;
+    font-size: 12px;
+    margin-left: 15px;
+  }
 }
+
+.section-header {
+    display: block;
+    font-size: 20px;
+    align-items: center;
+    margin: 70px 0 0 15px;
+    color: #4a3b28;
+  }
 
 .books-grid {
   display: flex;
   flex-wrap: wrap;
+  align-items: center;
   gap: 20px;
-  margin-top: 20px;
+  margin: 15px auto;
 }
 
 .book-card {
-  flex: 0 0 calc(25% - 15px);
+  flex: 0 0 calc(25% - 20px);
   display: flex;
   justify-content: center;
   align-items: flex-start;

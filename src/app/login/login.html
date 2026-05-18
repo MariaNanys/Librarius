@@ -1,26 +1,33 @@
 <form (submit)="onSubmit($event)" class="form-login">
   <h2>Logowanie</h2>
-  <label>
-    <input type="text" [formField]="loginForm.login" placeholder="e-mail" />
+  <div class="field">
+    <fieldset class="field-group">
+      <legend>E-mail</legend>
+      <input type="text" [formField]="loginForm.login" placeholder="Wpisz adres e-mail..." />
+    </fieldset>
     @if (loginForm.login().touched() && loginForm.login().errors(); as errors) {
-      <div class="error">
+      <div class="error-stack">
         @for (error of errors; track error.kind) {
-          <p>{{ error.message }}</p>
+          <p class="error">{{ error.message }}</p>
         }
       </div>
     }
-  </label>
-  <label>
-    <input type="password" [formField]="loginForm.password" placeholder="hasło" />
+  </div>
+  <div class="field">
+    <fieldset class="field-group">
+      <legend>Hasło</legend>
+      <input type="password" [formField]="loginForm.password" placeholder="Wpisz hasło..." />
+    </fieldset>
     @if (loginForm.password().touched() && loginForm.password().errors(); as errors) {
-      <div class="error">
+      <div class="error-stack">
         @for (error of errors; track error.kind) {
-          <p>{{ error.message }}</p>
+          <p class="error">{{ error.message }}</p>
         }
       </div>
     }
-  </label>
-  <button class="btn" type="submit" [disabled]="loginForm().invalid()">Zaloguj się</button>
+  </div>
+  <a class="forgot-link" routerLink="/forgot-password">Nie pamiętasz hasła?</a>
+  <button class="btn" type="submit" [disabled]="loginForm().invalid()">Zaloguj</button>
   @if (submitError()) {
     <p class="error">{{ submitError() }}</p>
   }

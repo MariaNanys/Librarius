@@ -33,6 +33,10 @@ export class LibrarianReservationsComponent implements OnInit {
   isRejecting = signal<boolean>(false);
   rejectError = signal<string>('');
 
+  successPopupOpen = signal<boolean>(false);
+  successMessage = signal<string>('');
+  private successTimeoutHandle: number | null = null;
+
   readonly pageSize = 7;
   private readonly endedStatuses = ['closed', 'rejected', 'cancelled', 'expired'];
 
@@ -205,11 +209,14 @@ export class LibrarianReservationsComponent implements OnInit {
     this.reservationService.accept(reservation.id).subscribe({
       next: () => {
         this.closeAcceptPopup();
+        this.successMessage.set('Rezerwacja potwierdzona pomyślnie.');
+        this.successPopupOpen.set(true);
+        this.scheduleSuccessClose();
         this.loadReservations();
       },
       error: (err) => {
         console.error('Błąd potwierdzania:', err);
-        this.acceptError.set(err?.error?.detail || 'Nie udało się potwierdzić rezerwacji.');
+        this.acceptError.set('Nie udało się potwierdzić rezerwacji.');
         this.isAccepting.set(false);
       },
     });
@@ -239,13 +246,26 @@ export class LibrarianReservationsComponent implements OnInit {
     this.reservationService.reject(reservation.id).subscribe({
       next: () => {
         this.closeRejectPopup();
+        this.successMessage.set('Rezerwacja anulowana pomyślnie.');
+        this.successPopupOpen.set(true);
+        this.scheduleSuccessClose();
         this.loadReservations();
       },
       error: (err) => {
         console.error('Błąd anulowania:', err);
-        this.rejectError.set(err?.error?.detail || 'Nie udało się anulować rezerwacji.');
+        this.rejectError.set('Nie udało się odrzucić rezerwacji.');
         this.isRejecting.set(false);
       },
     });
+  }
+
+  private scheduleSuccessClose(): void {
+    if (this.successTimeoutHandle !== null) {
+      clearTimeout(this.successTimeoutHandle);
+    }
+    this.successTimeoutHandle = window.setTimeout(() => {
+      this.successPopupOpen.set(false);
+      this.successTimeoutHandle = null;
+    }, 2000);
   }
 }

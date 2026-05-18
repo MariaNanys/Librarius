@@ -58,7 +58,7 @@
         </div>
 
         <label>
-            <input type="number" placeholder="Numer zasobu" [value]="resourceNumber() || ''"
+            <input type="number" placeholder="Numer zasobu (ISBN)" [value]="resourceNumber() || ''"
                 (input)="resourceNumber.set(+$any($event.target).value)" />
         </label>
 
@@ -75,9 +75,7 @@
         </div>
 
         @if (isDateRangeInvalid()) {
-            <div style="color: #dc3545; font-size: 0.85rem; margin-top: -10px; margin-bottom: 15px; text-align: center;">
-                Rok wydania "do" nie może być mniejszy niż rok "od".
-            </div>
+            <p class="date-error">Rok wydania "do" nie może być mniejszy niż rok "od".</p>
         }
 
         <label>
@@ -124,15 +122,9 @@
             }
         </div>
 
-       <div class="form-actions" style="width: 100%; grid-column: 1 / -1; margin-top: 40px; margin-bottom: 20px; display: flex; justify-content: center;">
-            <button type="button" (click)="onSubmit()"
-                [disabled]="isDateRangeInvalid()"
-                [style.opacity]="isDateRangeInvalid() ? '0.5' : '1'"
-                [style.cursor]="isDateRangeInvalid() ? 'not-allowed' : 'pointer'"
-                style="background-color: #4A3B28; color: white; padding: 15px 40px; border-radius: 25px; border: none; font-size: 16px; transition: opacity 0.3s;">
-                Szukaj książki
-            </button>
-        </div>
+        <button type="button" class="btn-search" (click)="onSubmit()" [disabled]="isDateRangeInvalid()">
+            Szukaj
+        </button>
     </form>
 </div>
 } @else {

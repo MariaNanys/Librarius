@@ -4,6 +4,7 @@ import { Location } from '@angular/common';
 import { BookService } from '../services/book.service';
 import { AuthService } from '../services/auth.service';
 import { ReservationService } from '../services/reservation.service';
+import { SearchAdvanceService } from '../services/search-advance.service';
 
 @Component({
   selector: 'app-book-details',
@@ -18,17 +19,20 @@ export class BookDetailsComponent implements OnInit, OnDestroy {
   private bookService = inject(BookService);
   private authService = inject(AuthService);
   private reservationService = inject(ReservationService);
+  private searchAdvanceService = inject(SearchAdvanceService);
   private cdr = inject(ChangeDetectorRef);
 
   bookId: string | null = null;
   bookDetails: any = null;
   libraries: any = null;
+  languageMap: Record<string, string> = {};
   isLoading = true;
   isExpanded = false;
   isLibrarian = this.authService.isLibrarian;
 
   popupOpen = false;
   selectedLibraryId: number | null = null;
+  isLibraryDropdownOpen = false;
   isSaving = false;
   saveError = '';
   successPopupOpen = false;
@@ -54,6 +58,11 @@ export class BookDetailsComponent implements OnInit, OnDestroy {
     return this.libraries.find((l: any) => l.id === this.selectedLibraryId) ?? null;
   }
 
+  get selectedLibraryName(): string {
+    const lib = this.selectedLibrary;
+    return lib ? `${lib.name}, ${lib.city}` : '';
+  }
+
   get librarianAvailability(): { available: boolean; label: string } | null {
     if (!this.isLibrarian() || !this.libraries) return null;
     const user = this.authService.currentUser();
@@ -67,6 +76,14 @@ export class BookDetailsComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    this.searchAdvanceService.getLanguages().subscribe({
+      next: data => {
+        data.forEach(l => this.languageMap[l.code] = l.display);
+        this.cdr.detectChanges();
+      },
+      error: err => console.error(err)
+    });
+
     this.route.paramMap.subscribe(params => {
       this.bookId = params.get('id');
       this.isLoading = true;
@@ -113,6 +130,11 @@ export class BookDetailsComponent implements OnInit, OnDestroy {
     return url ? url : '/assets/book_1.webp';
   }
 
+  getLanguageDisplay(code: string | null | undefined): string {
+    if (!code) return 'Brak danych';
+    return this.languageMap[code.toLowerCase()] || code.toUpperCase();
+  }
+
   goBack(): void {
     this.location.back();
   }
@@ -128,6 +150,7 @@ export class BookDetailsComponent implements OnInit, OnDestroy {
     this.selectedLibraryId = libraryId;
     this.saveError = '';
     this.popupOpen = true;
+    this.isLibraryDropdownOpen = false;
   }
 
   closePopup(): void {
@@ -135,10 +158,18 @@ export class BookDetailsComponent implements OnInit, OnDestroy {
     this.selectedLibraryId = null;
     this.isSaving = false;
     this.saveError = '';
+    this.isLibraryDropdownOpen = false;
   }
 
-  onLibraryChange(value: string): void {
-    this.selectedLibraryId = value ? Number(value) : null;
+  toggleLibraryDropdown(): void {
+    this.isLibraryDropdownOpen = !this.isLibraryDropdownOpen;
+  }
+
+  selectLibrary(id: number, available: boolean): void {
+    if (!available) return;
+    this.selectedLibraryId = id;
+    this.isLibraryDropdownOpen = false;
+    this.saveError = '';
   }
 
   confirmReservation(): void {
@@ -158,7 +189,7 @@ export class BookDetailsComponent implements OnInit, OnDestroy {
       },
       error: (err) => {
         console.error('Błąd rezerwacji:', err);
-        this.saveError = err?.error?.detail || 'Nie udało się utworzyć rezerwacji.';
+        this.saveError = 'Nie udało się utworzyć rezerwacji.';
         this.isSaving = false;
         this.cdr.detectChanges();
       }

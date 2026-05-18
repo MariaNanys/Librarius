@@ -132,11 +132,10 @@
       class="pagination-btn"
       (click)="changePage(currentPage() - 1)"
       [disabled]="currentPage() === 1">
-      <span class="arrow">&laquo;</span> Poprzednia
+      <span class="arrow">&laquo;</span>
     </button>
 
     <div class="page-counter">
-      Strona
       @if (!isEditingPage()) {
         <strong (click)="toggleEditPage()" title="Kliknij, aby wpisać numer strony">
           {{ currentPage() }}
@@ -158,51 +157,60 @@
       class="pagination-btn"
       (click)="changePage(currentPage() + 1)"
       [disabled]="currentPage() === totalPages()">
-      Następna <span class="arrow">&raquo;</span>
+      <span class="arrow">&raquo;</span>
     </button>
   </div>
 }
 
+@if (successPopupOpen()) {
+  <div class="popup-overlay">
+    <div class="popup-card popup-card-small">
+      <h2 class="popup-success-title">Sukces!</h2>
+      <p class="popup-message">{{ successMessage() }}</p>
+    </div>
+  </div>
+}
+
 @if (acceptPopupOpen() && reservationToAccept(); as r) {
-  <div class="modal-backdrop" (click)="closeAcceptPopup()">
-    <div class="modal" (click)="$event.stopPropagation()">
-      <h2 class="modal-title">Potwierdź rezerwację</h2>
-      <div class="modal-fields">
-        <div class="modal-row"><span class="modal-label">Nr rezerwacji:</span><span>{{ r.id }}</span></div>
-        <div class="modal-row"><span class="modal-label">Imię i nazwisko:</span><span>{{ readerName(r) }}</span></div>
-        <div class="modal-row"><span class="modal-label">Adres e-mail:</span><span>{{ r.reader?.email || '-' }}</span></div>
-        <div class="modal-row"><span class="modal-label">ISBN:</span><span>{{ r.book.isbn || '-' }}</span></div>
-        <div class="modal-row"><span class="modal-label">Data rezerwacji:</span><span>{{ formatDate(r.start_time) }}</span></div>
-        <div class="modal-row"><span class="modal-label">Koniec rezerwacji:</span><span>{{ pickupDeadline() }}</span></div>
+  <div class="popup-overlay" (click)="closeAcceptPopup()">
+    <div class="popup-card" (click)="$event.stopPropagation()">
+      <h2 class="popup-title confirm">Potwierdź rezerwację</h2>
+      <div class="popup-info">
+        <div class="popup-row"><span class="popup-label">Nr rezerwacji:</span><span class="popup-value">{{ r.id }}</span></div>
+        <div class="popup-row"><span class="popup-label">Imię i nazwisko:</span><span class="popup-value">{{ readerName(r) }}</span></div>
+        <div class="popup-row"><span class="popup-label">Adres e-mail:</span><span class="popup-value">{{ r.reader?.email || '-' }}</span></div>
+        <div class="popup-row"><span class="popup-label">ISBN:</span><span class="popup-value">{{ r.book.isbn || '-' }}</span></div>
+        <div class="popup-row"><span class="popup-label">Data rezerwacji:</span><span class="popup-value">{{ formatDate(r.start_time) }}</span></div>
+        <div class="popup-row"><span class="popup-label">Koniec rezerwacji:</span><span class="popup-value">{{ pickupDeadline() }}</span></div>
       </div>
       @if (acceptError()) {
-        <p class="error">{{ acceptError() }}</p>
+        <p class="popup-error">{{ acceptError() }}</p>
       }
-      <div class="modal-actions">
-        <button type="button" class="btn btn-outline" (click)="closeAcceptPopup()" [disabled]="isAccepting()">Powrót</button>
-        <button type="button" class="btn btn-primary" (click)="confirmAccept()" [disabled]="isAccepting()">Potwierdź</button>
+      <div class="popup-actions">
+        <button type="button" class="btn-back" (click)="closeAcceptPopup()" [disabled]="isAccepting()">Powrót</button>
+        <button type="button" class="btn-confirm" (click)="confirmAccept()" [disabled]="isAccepting()">Potwierdź</button>
       </div>
     </div>
   </div>
 }
 
 @if (rejectPopupOpen() && reservationToReject(); as r) {
-  <div class="modal-backdrop" (click)="closeRejectPopup()">
-    <div class="modal" (click)="$event.stopPropagation()">
-      <h2 class="modal-title">Czy na pewno chcesz anulować rezerwację?</h2>
-      <div class="modal-fields">
-        <div class="modal-row"><span class="modal-label">Nr rezerwacji:</span><span>{{ r.id }}</span></div>
-        <div class="modal-row"><span class="modal-label">Imię i nazwisko:</span><span>{{ readerName(r) }}</span></div>
-        <div class="modal-row"><span class="modal-label">Adres e-mail:</span><span>{{ r.reader?.email || '-' }}</span></div>
-        <div class="modal-row"><span class="modal-label">ISBN:</span><span>{{ r.book.isbn || '-' }}</span></div>
-        <div class="modal-row"><span class="modal-label">Data rezerwacji:</span><span>{{ formatDate(r.start_time) }}</span></div>
+  <div class="popup-overlay" (click)="closeRejectPopup()">
+    <div class="popup-card" (click)="$event.stopPropagation()">
+      <h2 class="popup-title">Anuluj rezerwację</h2>
+      <div class="popup-info">
+        <div class="popup-row"><span class="popup-label">Nr rezerwacji:</span><span class="popup-value">{{ r.id }}</span></div>
+        <div class="popup-row"><span class="popup-label">Imię i nazwisko:</span><span class="popup-value">{{ readerName(r) }}</span></div>
+        <div class="popup-row"><span class="popup-label">Adres e-mail:</span><span class="popup-value">{{ r.reader?.email || '-' }}</span></div>
+        <div class="popup-row"><span class="popup-label">ISBN:</span><span class="popup-value">{{ r.book.isbn || '-' }}</span></div>
+        <div class="popup-row"><span class="popup-label">Data rezerwacji:</span><span class="popup-value">{{ formatDate(r.start_time) }}</span></div>
       </div>
       @if (rejectError()) {
-        <p class="error">{{ rejectError() }}</p>
+        <p class="popup-error">{{ rejectError() }}</p>
       }
-      <div class="modal-actions">
-        <button type="button" class="btn btn-outline" (click)="closeRejectPopup()" [disabled]="isRejecting()">Powrót</button>
-        <button type="button" class="btn btn-danger" (click)="confirmReject()" [disabled]="isRejecting()">Potwierdź anulowanie</button>
+      <div class="popup-actions">
+        <button type="button" class="btn-back" (click)="closeRejectPopup()" [disabled]="isRejecting()">Powrót</button>
+        <button type="button" class="btn-cancel-confirm" (click)="confirmReject()" [disabled]="isRejecting()">Potwierdź anulowanie</button>
       </div>
     </div>
   </div>

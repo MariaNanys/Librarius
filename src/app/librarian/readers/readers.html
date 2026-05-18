@@ -79,11 +79,10 @@
       class="pagination-btn"
       (click)="changePage(currentPage() - 1)"
       [disabled]="currentPage() === 1">
-      <span class="arrow">&laquo;</span> Poprzednia
+      <span class="arrow">&laquo;</span>
     </button>
 
     <div class="page-counter">
-      Strona
       @if (!isEditingPage()) {
         <strong (click)="toggleEditPage()" title="Kliknij, aby wpisać numer strony">
           {{ currentPage() }}
@@ -105,7 +104,7 @@
       class="pagination-btn"
       (click)="changePage(currentPage() + 1)"
       [disabled]="currentPage() === totalPages()">
-      Następna <span class="arrow">&raquo;</span>
+      <span class="arrow">&raquo;</span>
     </button>
   </div>
 }
