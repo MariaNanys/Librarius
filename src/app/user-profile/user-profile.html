@@ -3,80 +3,91 @@
   <form (submit)="onSubmit($event)">
 
     <div class="field">
-      <span class="field-label">Imię</span>
-      @if (isEditing()) {
-        <input type="text" [formField]="editForm.first_name" placeholder="Imię" />
-        @if (editForm.first_name().touched() && editForm.first_name().errors(); as errors) {
+      <fieldset class="field-group">
+        <legend>Imię</legend>
+        @if (isEditing()) {
+          <input type="text" [formField]="editForm.first_name" placeholder="Wpisz imię..." />
+        } @else {
+          <span class="field-value">{{ user()!.first_name }}</span>
+        }
+      </fieldset>
+      @if (isEditing() && editForm.first_name().touched() && editForm.first_name().errors(); as errors) {
+        <div class="error-stack">
           @for (error of errors; track error.kind) {
             <p class="error">{{ error.message }}</p>
           }
-        }
-      } @else {
-        <span class="field-value">{{ user()!.first_name }}</span>
+        </div>
       }
     </div>
 
     <div class="field">
-      <span class="field-label">Nazwisko</span>
-      @if (isEditing()) {
-        <input type="text" [formField]="editForm.last_name" placeholder="Nazwisko" />
-        @if (editForm.last_name().touched() && editForm.last_name().errors(); as errors) {
+      <fieldset class="field-group">
+        <legend>Nazwisko</legend>
+        @if (isEditing()) {
+          <input type="text" [formField]="editForm.last_name" placeholder="Wpisz nazwisko..." />
+        } @else {
+          <span class="field-value">{{ user()!.last_name }}</span>
+        }
+      </fieldset>
+      @if (isEditing() && editForm.last_name().touched() && editForm.last_name().errors(); as errors) {
+        <div class="error-stack">
           @for (error of errors; track error.kind) {
             <p class="error">{{ error.message }}</p>
           }
+        </div>
+      }
+    </div>
+
+    <div class="field">
+      <fieldset class="field-group">
+        <legend>E-mail</legend>
+        @if (isEditing()) {
+          <input type="email" [value]="user()?.email" placeholder="E-mail" readonly />
+        } @else {
+          <span class="field-value">{{ user()!.email }}</span>
         }
-      } @else {
-        <span class="field-value">{{ user()!.last_name }}</span>
+      </fieldset>
+      @if (isEditing() && editForm.email().touched() && editForm.email().errors(); as errors) {
+        <div class="error-stack">
+          @for (error of errors; track error.kind) {
+            <p class="error">{{ error.message }}</p>
+          }
+        </div>
       }
     </div>
 
     @if (isLibrarian()) {
       <div class="field">
-        <span class="field-label">Biblioteka</span>
-        <span class="field-value">{{ library()?.name ?? '—' }}</span>
+        <fieldset class="field-group">
+          <legend>Biblioteka</legend>
+          <span class="field-value">{{ library()?.name ?? '—' }}</span>
+        </fieldset>
       </div>
     } @else {
       <div class="field">
-        <span class="field-label">Województwo</span>
-        @if (isEditing()) {
-          <select [formField]="editForm.region">
-            @for (r of regions; track r.id) {
-              <option [value]="r.id" [selected]="r.id === +editModel().region">
-                {{ r.name }}
-              </option>
-            }
-          </select>
-        } @else {
-          <span class="field-value">{{ getRegionName(user()!.region) }}</span>
-        }
+        <fieldset class="field-group">
+          <legend>Region</legend>
+          @if (isEditing()) {
+            <select [formField]="editForm.region">
+              @for (r of regions; track r.id) {
+                <option [value]="r.id" [selected]="r.id === +editModel().region">
+                  {{ r.name }}
+                </option>
+              }
+            </select>
+          } @else {
+            <span class="field-value">{{ getRegionName(user()!.region) }}</span>
+          }
+        </fieldset>
       </div>
     }
 
-    <div class="field">
-      <span class="field-label">Email</span>
-      @if (isEditing()) {
-       <input 
-          type="email" 
-          [value]="user()?.email" 
-          placeholder="Email" 
-          readonly 
-        />
-        @if (editForm.email().touched() && editForm.email().errors(); as errors) {
-          @for (error of errors; track error.kind) {
-            <p class="error">{{ error.message }}</p>
-          }
-        }
-      } @else {
-        <span class="field-value">{{ user()!.email }}</span>
-      }
-    </div>
-
     <div class="form-actions">
       @if (isEditing()) {
-        <button type="submit" [disabled]="editForm().invalid()">Zapisz zmiany</button>
+        <button type="submit" class="btn" [disabled]="editForm().invalid()">Zapisz zmiany</button>
         <button type="button" class="btn-cancel" (click)="isEditing.set(false)">Anuluj</button>
       } @else {
-        <button type="button" (click)="isEditing.set(true)">Zmień dane</button>
+        <button type="button" class="btn" (click)="isEditing.set(true)">Zmień dane</button>
       }
     </div>
 

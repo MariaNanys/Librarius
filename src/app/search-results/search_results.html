@@ -3,46 +3,50 @@
 
     <div class="results-card">
 
-        <div class="table-header">
-            <div class="col-title">Tytuł</div>
-            <div class="col-authors">Autorzy</div>
-            <div class="col-publisher">Wydawca</div>
-            <div class="col-category">Kategoria</div>
-            <div class="col-action">Lokalizacja</div>
-        </div>
-
         @if (bookService.isSearchLoading()) {
         <div class="status-message">Szukam książek...</div>
         } @else if (bookService.searchResults().length === 0) {
         <div class="status-message">Nie znaleziono książek dla tej frazy.</div>
         } @else {
-        <div class="table-body">
-            @for (book of bookService.searchResults(); track book.id) {
-            <div class="table-row">
-                <div class="col-title">
-                    <img [src]="getCover(book.cover_url)" alt="Okładka" class="small-cover">
-                    <span class="book-title">{{ book.title }}</span>
-                </div>
+        <table class="results-table">
+            <thead>
+                <tr>
+                    <th></th>
+                    <th class="col-title">Tytuł</th>
+                    <th class="col-authors">Autorzy</th>
+                    <th class="col-publisher">Wydawca</th>
+                    <th class="col-language">Język</th>
+                    <th class="col-actions"></th>
+                </tr>
+            </thead>
+            <tbody>
+                @for (book of bookService.searchResults(); track book.id) {
+                <tr>
+                    <td class="col-cover">
+                        <img [src]="getCover(book.cover_url)" alt="Okładka" class="small-cover">
+                    </td>
+                    <td class="col-title">
+                        <span class="book-title">{{ book.title }}</span>
+                    </td>
+                    <td class="col-authors">{{ getAuthorsList(book.authors) }}</td>
+                    <td class="col-publisher">{{ book.publisher || 'Brak danych' }}</td>
+                    <td class="col-language">{{ getLanguageDisplay(book.language) }}</td>
+                    <td class="col-actions">
+                        <a [routerLink]="['/book', book.id]" class="details-btn">Szczegóły</a>
+                    </td>
+                </tr>
+                }
+            </tbody>
+        </table>
 
-                <div class="col-authors truncate">{{ getAuthorsList(book.authors) }}</div>
-                <div class="col-publisher truncate">{{ book.publisher || 'Brak danych' }}</div>
-                <div class="col-category truncate">{{ book.category || 'Brak danych' }}</div>
-
-                <div class="col-action">
-                    <a [routerLink]="['/book', book.id]" class="details-btn">Szczegóły</a>
-                </div>
-            </div>
-            }
-        </div>
         @if (bookService.totalPages() > 1) {
         <div class="pagination-wrapper">
             <button class="pagination-btn" (click)="changePage(bookService.currentPage() - 1)"
                 [disabled]="bookService.currentPage() === 1">
-                <span class="arrow">&laquo;</span> Poprzednia
+                <span class="arrow">&laquo;</span>
             </button>
 
             <div class="page-counter">
-                Strona
                 @if (!isEditingPage()) {
                 <strong (click)="toggleEditPage()" style="cursor: pointer;" title="Kliknij, aby wpisać numer strony">
                     {{ bookService.currentPage() }}
@@ -57,7 +61,7 @@
 
             <button class="pagination-btn" (click)="changePage(bookService.currentPage() + 1)"
                 [disabled]="bookService.currentPage() === bookService.totalPages()">
-                Następna <span class="arrow">&raquo;</span>
+                <span class="arrow">&raquo;</span>
             </button>
         </div>
         }

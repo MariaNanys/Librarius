@@ -1,4 +1,4 @@
-import { Component, inject, signal } from "@angular/core";
+import { Component, computed, HostListener, inject, signal } from "@angular/core";
 import { email, form, FormField, minLength, pattern, required, submit, validate } from "@angular/forms/signals";
 import { AuthService } from "../services/auth.service";
 
@@ -40,6 +40,27 @@ export class RegistrationComponent {
 
     formSubmitted = signal(false);
     submitError = signal<string | null>(null);
+    isRegionOpen = signal(false);
+
+    selectedRegionName = computed(() => {
+        const id = Number(this.registrationModel().region);
+        return this.regions.find(r => r.id === id)?.name ?? '';
+    });
+
+    toggleRegionDropdown() {
+        this.isRegionOpen.update(v => !v);
+    }
+
+    selectRegion(id: number) {
+        this.registrationModel.update(m => ({ ...m, region: String(id) }));
+        this.isRegionOpen.set(false);
+    }
+
+    @HostListener('document:click')
+    onDocumentClick() {
+        this.isRegionOpen.set(false);
+    }
+
     private _registrationForm = form(this.registrationModel, (schemaPath) => {
         required(schemaPath.first_name, { message: 'Imię jest wymagane' });
         required(schemaPath.last_name, { message: 'Nazwisko jest wymagane' });
@@ -55,7 +76,7 @@ export class RegistrationComponent {
                 message: 'Hasło musi zawierać małą literę, dużą literę i znak specjalny'
             }
         );
-        required(schemaPath?.repeatPassword, { message: 'Powtórzenie hasło jest wymagane' });
+        required(schemaPath?.repeatPassword, { message: 'Powtórzenie hasła jest wymagane' });
 
 
         validate(schemaPath?.repeatPassword, () => {

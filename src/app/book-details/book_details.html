@@ -18,14 +18,12 @@
 } @else if (bookDetails) {
 
     <div class="details-container">
-
-        <div class="back-button-container">
-            <button class="back-btn" (click)="goBack()">
-                &larr; Powrót
-            </button>
-        </div>
-
         <div class="book-details-card">
+            <div class="back-button-container">
+                <button class="back-btn" (click)="goBack()">
+                    &larr;
+                </button>
+            </div>
             <div class="card-header">
                 <div class="card-header-text">
                     <h1 class="book-title">{{ bookDetails.title }}</h1>
@@ -47,12 +45,13 @@
 
                 <div class="metadata-wrapper">
                     <ul class="details-list">
-                        <li><span class="label">Tytuł:</span> {{ bookDetails.title }}</li>
-                        <li><span class="label">Autor:</span> {{ bookDetails.authors?.[0]?.name }}</li>
-                        <li><span class="label">Rok wydania:</span> {{ bookDetails.published_year }}</li>
-                        <li><span class="label">ISBN:</span> {{ bookDetails.isbn }}</li>
-                        <li><span class="label">Kategorie:</span> {{ bookDetails.category || 'Brak danych' }}</li>
-                        <li><span class="label">Wydawnictwo:</span> {{ bookDetails.publisher }}</li>
+                        <li><span class="label">Tytuł:</span> {{ bookDetails.title || '-'}}</li>
+                        <li><span class="label">Autor:</span> {{ bookDetails.authors?.[0]?.name || '-'}}</li>
+                        <li><span class="label">Wydawnictwo:</span> {{ bookDetails.publisher || '-'}}</li>
+                        <li><span class="label">Rok wydania:</span> {{ bookDetails.published_year || '-'}}</li>
+                        <li><span class="label">ISBN:</span> {{ bookDetails.isbn || '-'}}</li>
+                        <li><span class="label">Kategorie:</span> {{ bookDetails.category || '-' }}</li>
+                        <li><span class="label">Język:</span> {{ getLanguageDisplay(bookDetails.language) || '-' }}</li>
                     </ul>
 
                     <div class="description-box">
@@ -87,20 +86,24 @@
                 <div class="lib-status" [class.status-available]="lib.is_available" [class.status-unavailable]="!lib.is_available">
                     {{ lib.is_available ? 'Dostępna' : 'Niedostępne' }}
                 </div>
-
-                <button
-                    class="reserve-btn"
-                    [class.btn-disabled]="!lib.is_available && isLoggedIn"
-                    [class.btn-login-required]="!isLoggedIn"
-                    [disabled]="!lib.is_available && isLoggedIn"
-                    (click)="handleReservation(lib.id)"
-                >
-                    @if (isLoggedIn) {
-                        Zarezerwuj
-                    } @else {
-                        Zaloguj się, aby zarezerwować
+                <div class="reserve-btn-contener">
+                    @if (!isLoggedIn) {
+                        <div class="reserve-non-logged">Chcesz zarezerwować?</div>
                     }
-                </button>
+                    <button
+                        class="reserve-btn"
+                        [class.btn-disabled]="!lib.is_available && isLoggedIn"
+                        [class.btn-login-required]="!isLoggedIn"
+                        [disabled]="!lib.is_available && isLoggedIn"
+                        (click)="handleReservation(lib.id)"
+                    >
+                        @if (isLoggedIn) {
+                            Zarezerwuj
+                        } @else {
+                            Zaloguj się
+                        }
+                    </button>
+                </div>
             </div>
         }
     } @else {
@@ -125,7 +128,7 @@
 
 @if (popupOpen && bookDetails && !isLibrarian()) {
     <div class="popup-overlay" (click)="closePopup()">
-        <div class="popup-card" (click)="$event.stopPropagation()">
+        <div class="popup-card" (click)="$event.stopPropagation(); isLibraryDropdownOpen = false">
             <h2 class="popup-title">Rezerwacja książki</h2>
 
             <div class="popup-book">
@@ -137,14 +140,32 @@
             </div>
 
             <div class="popup-field">
-                <label for="library-select" class="floating-label">Wybierz bibliotekę</label>
-                <select id="library-select" (change)="onLibraryChange($any($event.target).value)">
-                    @for (lib of libraries; track lib.id) {
-                        <option [value]="lib.id" [disabled]="!lib.is_available" [selected]="lib.id === selectedLibraryId">
-                            {{ lib.name }}, {{ lib.city }}
-                        </option>
-                    }
-                </select>
+                <fieldset class="field-group" [class.is-open]="isLibraryDropdownOpen">
+                    <legend>Wybierz bibliotekę</legend>
+                    <button type="button" class="dropdown-trigger"
+                            (click)="toggleLibraryDropdown(); $event.stopPropagation()">
+                        @if (selectedLibraryName) {
+                            <span>{{ selectedLibraryName }}</span>
+                        } @else {
+                            <span class="placeholder-text">Wybierz bibliotekę</span>
+                        }
+                        <span class="arrow">@if (isLibraryDropdownOpen) { &#9650; } @else { &#9660; }</span>
+                    </button>
+                </fieldset>
+                @if (isLibraryDropdownOpen) {
+                    <div class="dropdown-list" (click)="$event.stopPropagation()">
+                        <div class="dropdown-scroll">
+                            @for (lib of libraries; track lib.id) {
+                                <div class="dropdown-item"
+                                     [class.selected]="lib.id === selectedLibraryId"
+                                     [class.disabled]="!lib.is_available"
+                                     (click)="selectLibrary(lib.id, lib.is_available)">
+                                    {{ lib.name }}, {{ lib.city }}
+                                </div>
+                            }
+                        </div>
+                    </div>
+                }
             </div>
 
             @if (selectedLibrary; as lib) {

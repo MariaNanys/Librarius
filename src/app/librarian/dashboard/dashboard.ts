@@ -26,6 +26,10 @@ export class LibrarianDashboardComponent implements OnInit {
   isRejecting = signal<boolean>(false);
   rejectError = signal<string>('');
 
+  successPopupOpen = signal<boolean>(false);
+  successMessage = signal<string>('');
+  private successTimeoutHandle: number | null = null;
+
   private readonly endedStatuses = ['closed', 'rejected', 'cancelled', 'expired'];
 
   pendingCount = computed(
@@ -92,6 +96,9 @@ export class LibrarianDashboardComponent implements OnInit {
     this.reservationService.accept(reservation.id).subscribe({
       next: () => {
         this.closeAcceptPopup();
+        this.successMessage.set('Rezerwacja potwierdzona pomyślnie.');
+        this.successPopupOpen.set(true);
+        this.scheduleSuccessClose();
         this.loadReservations();
       },
       error: (err) => {
@@ -124,6 +131,9 @@ export class LibrarianDashboardComponent implements OnInit {
     this.reservationService.reject(reservation.id).subscribe({
       next: () => {
         this.closeRejectPopup();
+        this.successMessage.set('Rezerwacja anulowana pomyślnie.');
+        this.successPopupOpen.set(true);
+        this.scheduleSuccessClose();
         this.loadReservations();
       },
       error: (err) => {
@@ -132,6 +142,16 @@ export class LibrarianDashboardComponent implements OnInit {
         this.isRejecting.set(false);
       },
     });
+  }
+
+  private scheduleSuccessClose(): void {
+    if (this.successTimeoutHandle !== null) {
+      clearTimeout(this.successTimeoutHandle);
+    }
+    this.successTimeoutHandle = window.setTimeout(() => {
+      this.successPopupOpen.set(false);
+      this.successTimeoutHandle = null;
+    }, 2000);
   }
 
   formatDate(dt: string | null): string {

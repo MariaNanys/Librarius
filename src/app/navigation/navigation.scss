@@ -1,26 +1,44 @@
 .main-navigation {
-  width: 300px;
-  position: sticky;
+  width: 250px;
+  position: fixed;
   top: 0;
-  height: 98vh;
+  left: 0;
+  height: 100vh;
   overflow-y: auto;
-  div a {
-    display: flex;
-    justify-content: center;
-    margin-top: 20px;
-  }
+  padding: 10px 12px 40px 0;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+}
+.nav-logo a {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
 }
 .navs {
-  height: calc(100vh - 200px);
+  flex: 1;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  padding-left: 30px;
-  li {
-    display: flex;
-    a {
-      text-decoration: none;
-      color: #41431B;
+  padding-left: 34px;
+  font-size: 12px;
+  ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  li a {
+    display: block;
+    text-decoration: none;
+    color: #41431B;
+    margin-top: 20px;
+
+    &:hover {
+      text-decoration: underline;
+    }
+
+    &.active {
+      text-decoration: underline;
     }
   }
 }
